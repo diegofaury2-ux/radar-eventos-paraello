@@ -1,22 +1,113 @@
-/* sync.js v1 - Radar Eventos Paraello - last-write-wins, sem senha */
-var API='/api/state',ready=false,_ver=0,pushTimer=null,pushing=false,pendingPush=false;
-var _set=localStorage.setItem.bind(localStorage),_rem=localStorage.removeItem.bind(localStorage),_clear=localStorage.clear.bind(localStorage);
-function snapshot(){var o={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);o[k]=localStorage.getItem(k);}return o;}
-function doPush(){if(!ready)return;if(pushing){pendingPush=true;return;}pushing=true;fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({baseV:_ver,data:snapshot()})}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&typeof j.v==='number')_ver=j.v;}).catch(function(){}).finally(function(){pushing=false;if(pendingPush){pendingPush=false;schedulePush();}});}
-function schedulePush(){clearTimeout(pushTimer);pushTimer=setTimeout(function(){pushTimer=null;doPush();},1000);}
-localStorage.setItem=function(k,v){_set(k,v);if(ready)schedulePush();};
-localStorage.removeItem=function(k){_rem(k);if(ready)schedulePush();};
-window.__cloudHydrate=function(startApp){fetch(API,{method:'GET',headers:{'Content-Type':'application/json'}}).then(function(r){return r.ok?r.json():Promise.reject(new Error('http '+r.status));}).then(function(resp){_ver=typeof resp.v==='number'?resp.v:0;var data=resp.data,hadData=data&&typeof data==='object'&&Object.keys(data).length>0;if(hadData){_clear();Object.keys(data).forEach(function(k){_set(k,data[k]);});}ready=true;try{startApp();}catch(e){console.error(e);}if(!hadData)schedulePush();}).catch(function(err){if(String(err.message)!=='unauthorized'){ready=true;try{startApp();}catch(e){console.error(e);}}});};
-function hasPending(){return ready&&(pushTimer||pushing||pendingPush);}
-function flushNow(){if(!ready)return;clearTimeout(pushTimer);pushTimer=null;doPush();}
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flushNow();});
-window.addEventListener('pagehide',function(){flushNow();});
-window.addEventListener('beforeunload',function(e){if(hasPending()){flushNow();e.preventDefault();e.returnValue='';}});
-var POLL_MS=6000,_checking=false,_applying=false;
-function isEditing(){try{var el=document.activeElement;if(!el)return false;if(el.tagName==='TEXTAREA'||el.isContentEditable)return true;if(el.tagName==='INPUT'){var t=(el.getAttribute('type')||'text').toLowerCase();return t!=='checkbox'&&t!=='radio'&&t!=='button'&&t!=='submit'&&t!=='reset';}if(document.querySelector('.modal.open'))return true;}catch{}return false;}
-function applyRemote(){if(_applying)return;_applying=true;fetch(API,{method:'GET',headers:{'Content-Type':'application/json'}}).then(function(r){return r.ok?r.json():null;}).then(function(resp){if(!resp)return;_ver=typeof resp.v==='number'?resp.v:_ver;var data=resp.data;if(!data||typeof data!=='object')return;_clear();Object.keys(data).forEach(function(k){_set(k,data[k]);});try{if(typeof loadState==='function')loadState();}catch{}try{if(typeof renderAll==='function')renderAll();}catch{}try{var el=document.getElementById('__cloudUpdate');if(el)el.remove();}catch{}}).catch(function(){}).finally(function(){_applying=false;});}
-function showUpdateBanner(){if(document.getElementById('__cloudUpdate'))return;var d=document.createElement('div');d.id='__cloudUpdate';d.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147483647;background:#1a6fe8;color:#fff;padding:13px 18px;border-radius:10px;font-family:sans-serif;font-size:14px;box-shadow:0 8px 28px rgba(0,0,0,.45)';d.innerHTML='Outra pessoa salvou. <button id="__cloudUpdateBtn" style="margin-left:6px;background:#fff;color:#1a6fe8;border:0;border-radius:6px;padding:7px 14px;font-weight:700;cursor:pointer">Atualizar</button>';(document.body||document.documentElement).appendChild(d);var btn=document.getElementById('__cloudUpdateBtn');if(btn)btn.onclick=applyRemote;}
-function checkRemote(){if(!ready||_checking)return;if(hasPending()||pushing)return;_checking=true;fetch(API+'?v=1',{method:'GET',headers:{'Content-Type':'application/json'}}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&typeof j.v==='number'&&j.v>_ver){if(isEditing())showUpdateBanner();else applyRemote();}}).catch(function(){}).finally(function(){_checking=false;});}
-setInterval(checkRemote,POLL_MS);
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkRemote();});
-window.cloudRefresh=function(){location.reload();};
+// sync.js — Radar de Eventos Paraéllo
+// Cloud sync: last-write-wins, no password, poll every 6s, in-place DOM update
+
+(function () {
+  const API = '/api/state';
+  const STATE_KEY = 'radar-eventos-paraello';
+  const POLL_MS = 6000;
+  const DEBOUNCE_MS = 1000;
+  let lastKnown = null;
+  let saveTimer = null;
+  let latestPayload = null; // captures value from last localStorage.setItem
+
+  // ── helpers ──────────────────────────────────────────────────────────────
+  function serialize() {
+    try {
+      // Prefer the value captured from the app's last localStorage.setItem
+      if (latestPayload) return latestPayload;
+      // Fallback: read directly from storage using original getItem
+      const raw = _getItem.call(localStorage, STATE_KEY);
+      if (raw && raw !== 'null') return raw;
+      return JSON.stringify(window.S || {});
+    } catch { return null; }
+  }
+
+  function applyState(newS) {
+    try {
+      const current = _getItem.call(localStorage, STATE_KEY);
+      const newStr = typeof newS === 'string' ? newS : JSON.stringify(newS);
+      if (current === newStr) return; // no change
+      // Update localStorage without triggering our interceptor
+      _setItem.call(localStorage, STATE_KEY, newStr);
+      // Update window.S if it exists
+      if (window.S && typeof newS === 'object') {
+        Object.assign(window.S, newS);
+      }
+      // Re-render
+      if (typeof window.renderAll === 'function') window.renderAll();
+      else {
+        if (typeof window.fillFacFilter  === 'function') window.fillFacFilter();
+        if (typeof window.renderPainel   === 'function') window.renderPainel();
+        if (typeof window.renderTabela   === 'function') window.renderTabela();
+        if (typeof window.renderEventos  === 'function') window.renderEventos();
+        if (typeof window.renderCalendario==='function') window.renderCalendario();
+        if (typeof window.fillSelects    === 'function') window.fillSelects();
+      }
+    } catch (e) { console.warn('[sync] applyState error', e); }
+  }
+
+  // ── save (debounced) ──────────────────────────────────────────────────────
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      const payload = serialize();
+      if (!payload || payload === '{}') return;
+      lastKnown = payload;
+      try {
+        await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload
+        });
+      } catch (e) { console.warn('[sync] save error', e); }
+    }, DEBOUNCE_MS);
+  }
+
+  // ── intercept localStorage writes ────────────────────────────────────────
+  const _setItem = localStorage.setItem.bind(localStorage);
+  const _getItem = localStorage.getItem.bind(localStorage);
+  localStorage.setItem = function (k, v) {
+    _setItem(k, v);
+    if (k === STATE_KEY) {
+      latestPayload = v;
+      scheduleSave();
+    }
+  };
+
+  // ── poll ──────────────────────────────────────────────────────────────────
+  async function poll() {
+    try {
+      const r = await fetch(API + '?t=' + Date.now());
+      const { value } = await r.json();
+      if (!value) return;
+      const payload = typeof value === 'string' ? value : JSON.stringify(value);
+      if (payload === lastKnown) return; // no change
+      lastKnown = payload;
+      const parsed = typeof value === 'string' ? JSON.parse(value) : value;
+      applyState(parsed);
+    } catch (e) { console.warn('[sync] poll error', e); }
+  }
+
+  // ── hydrate then boot ─────────────────────────────────────────────────────
+  window.__cloudHydrate = async function (bootFn) {
+    try {
+      const r = await fetch(API + '?t=' + Date.now());
+      const { value } = await r.json();
+      if (value) {
+        const payload = typeof value === 'string' ? value : JSON.stringify(value);
+        lastKnown = payload;
+        // Pre-seed localStorage so the app boots with cloud data
+        _setItem.call(localStorage, STATE_KEY, payload);
+      } else {
+        // Cloud empty — seed from current localStorage value
+        const localVal = _getItem.call(localStorage, STATE_KEY);
+        if (localVal && localVal !== 'null') {
+          latestPayload = localVal;
+          scheduleSave();
+        }
+      }
+    } catch (e) { console.warn('[sync] hydrate error', e); }
+    bootFn();
+    setInterval(poll, POLL_MS);
+  };
+})();

@@ -1,0 +1,1182 @@
+<html lang="pt-BR" data-theme="light" suppresshydrationwarning="true" data-qb-installed="true"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Radar de Eventos Paraéllo — mapear e decidir a quais eventos ir no 2º semestre de 2026.">
+<title>Radar de Eventos · Paraéllo</title>
+<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;circle cx='16' cy='16' r='13' fill='none' stroke='%23ff4f00' stroke-width='2'/&gt;&lt;circle cx='16' cy='16' r='7.5' fill='none' stroke='%23ff4f00' stroke-width='2'/&gt;&lt;circle cx='16' cy='16' r='2.5' fill='%23ff4f00'/&gt;&lt;/svg&gt;">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Mona+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --display:'Mona Sans','Inter',system-ui,sans-serif;
+  --mono:'Inter',system-ui,sans-serif;
+  /* status do calendário — preenchimento sólido c/ texto branco, fixas nos dois temas */
+  --band-good:#4F7A3F; --band-warn:#9A6A1F;
+  /* orçamento comprometido herda o acento laranja */
+  --par:var(--hit);
+}
+/* ===== Tema claro — cream Zapier (padrão) ===== */
+:root[data-theme="light"]{
+  --bg:#FFFEFB; --panel:#F8F4F0; --panel2:#F1ECE4; --panel3:#E7DED2;
+  --line:#E8E0D4; --line2:#D8CFC0;
+  --text:#201515; --muted:#605D52; --dim:#939084;
+  --shadow:0 1px 2px rgba(32,21,21,.04),0 10px 26px rgba(32,21,21,.05);
+  --shadow-hover:0 2px 6px rgba(32,21,21,.06),0 16px 34px rgba(32,21,21,.09);
+  --hit:#FF4F00; --hit-strong:#E84800; --hit-weak:#FFE9DF; --hit-text:#C43E00;
+  --green:#3F6B33; --green-weak:#EEF2E9;
+  --blue:#46597C; --blue-weak:#EAEDF3;
+  --amber:#8A5E16; --amber-weak:#F6EFDD;
+  --red:#8F3E30; --red-weak:#F6E8E4;
+}
+/* ===== Tema escuro — café Zapier (polaridade invertida) ===== */
+:root[data-theme="dark"]{
+  --bg:#201515; --panel:#2B1E1D; --panel2:#352726; --panel3:#40302E;
+  --line:#3A2C2A; --line2:#4B3A37;
+  --text:#F8F4F0; --muted:#C5C0B1; --dim:#948F82;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px rgba(0,0,0,.5);
+  --shadow-hover:0 2px 6px rgba(0,0,0,.5),0 20px 50px rgba(0,0,0,.62);
+  --hit:#FF6A2B; --hit-strong:#FF5A14; --hit-weak:#3A241C; --hit-text:#FF8A55;
+  --green:#88B774; --green-weak:#212A1C;
+  --blue:#9DB1D2; --blue-weak:#1F2530;
+  --amber:#D8A85A; --amber-weak:#2C2417;
+  --red:#DB8C7C; --red-weak:#2F1D1A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;min-height:100vh;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.14em;flex:none}
+/* eyebrow / rótulo — face de display (substituto Degular), tracking positivo */
+.kic,label,th,.seg,.cal-dow,.dkv .k,.brand small{font-family:var(--display);text-transform:uppercase}
+
+/* topo */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:0 26px;height:64px;display:flex;align-items:center;gap:22px}
+.brand{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-.01em}
+.brandlogo{display:block;width:114px;height:auto;filter:brightness(0)}
+[data-theme=dark] .brandlogo{filter:none}
+.brand-mark{width:26px;height:26px;color:var(--hit);flex:none}
+.brand .g{color:var(--text)}
+.brand small{display:block;font-size:9px;letter-spacing:.16em;color:var(--dim);font-weight:500;margin-top:2px}
+.tabs{display:flex;gap:2px;margin-left:6px}
+.tab{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--muted);background:none;border:1px solid transparent;padding:8px 14px;border-radius:10px;cursor:pointer;transition:.16s}
+.tab:hover{color:var(--text);background:var(--panel2)}
+.tab.active{color:var(--hit-text);background:var(--hit-weak);border-color:transparent}
+.tab:active{transform:translateY(1px)}
+.top .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--line2);color:var(--muted);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:17px;transition:.16s}
+.icon-btn:hover{border-color:var(--hit);color:var(--hit)}
+.icon-btn:active{transform:translateY(1px)}
+
+main{max-width:1280px;margin:0 auto;padding:30px 26px 64px}
+.view{display:none;animation:fade .28s cubic-bezier(.16,1,.3,1)}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+h2{font-family:var(--display);font-weight:500;font-size:30px;letter-spacing:-.01em;margin-bottom:5px;color:var(--text)}
+.sub{font-family:var(--sans);font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+h3{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em;margin-bottom:13px}
+
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;box-shadow:var(--shadow)}
+.card.soft{background:var(--bg);border:1px solid var(--line);box-shadow:none;transition:border-color .16s}
+.card.soft:hover{border-color:var(--line2)}
+
+.kic{font-size:11px;letter-spacing:.09em;color:var(--dim);font-weight:500}
+.big{font-family:var(--display);font-size:34px;font-weight:500;line-height:1;margin-top:10px;letter-spacing:-.01em}
+
+/* orçamento */
+.budget-bar{height:10px;border-radius:99px;background:var(--panel3);overflow:hidden;margin:18px 0 11px;display:flex}
+.budget-bar i{display:block;height:100%;transition:width .4s cubic-bezier(.16,1,.3,1)}
+.budget-bar .used{background:linear-gradient(90deg,var(--hit),color-mix(in srgb,var(--hit) 60%,#fff))}
+.legend{display:flex;gap:18px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+.legend b{color:var(--text);font-weight:600}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+/* inputs */
+label{display:block;font-size:10px;letter-spacing:.08em;color:var(--dim);font-weight:600;margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line2);color:var(--text);border-radius:8px;padding:10px 12px;font-family:var(--sans);font-size:14px;transition:.16s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--hit);box-shadow:0 0 0 3px var(--hit-weak)}
+input::placeholder{color:var(--dim)}
+textarea{resize:vertical;min-height:64px;line-height:1.55}
+.field{margin-bottom:14px}
+.row{display:flex;gap:12px}.row>*{flex:1}
+
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-size:14px;font-weight:600;border:1px solid var(--line2);background:var(--bg);color:var(--text);padding:10px 16px;border-radius:10px;cursor:pointer;transition:.16s;white-space:nowrap}
+.btn .ic{width:15px;height:15px}
+.btn:hover{border-color:var(--text);background:var(--panel2)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--hit);color:#fff;border-color:transparent}
+.btn.pri:hover{background:var(--hit-strong);color:#fff}
+.btn.sm{padding:8px 13px;font-size:13px}
+.btn.danger{color:var(--red)}
+.btn.danger:hover{border-color:var(--red);color:var(--red);background:var(--red-weak)}
+
+/* busca */
+.search-wrap{position:relative;display:flex;align-items:center;min-width:220px}
+.search-wrap .search-ic{position:absolute;left:12px;width:16px;height:16px;color:var(--dim);pointer-events:none}
+.search-wrap input{padding-left:35px}
+
+/* tabela eventos */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.toolbar select,.toolbar input{width:auto;min-width:130px}
+.tb-prof{display:flex;align-items:center;gap:8px}
+.tb-prof label{margin:0;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:13px 13px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:10px;letter-spacing:.08em;color:var(--dim);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s}
+th:hover{color:var(--hit-text)}
+td{color:var(--muted)}td b{color:var(--text);font-weight:600}
+tbody tr{cursor:pointer;transition:background .14s}
+tbody tr:hover{background:var(--panel2)}
+tbody tr:last-child td{border-bottom:none}
+.pos{font-family:var(--sans);font-weight:600;font-size:13px;color:var(--dim)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:99px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.geo{font-family:var(--sans);font-size:12px;color:var(--dim)}
+.preco-gratis{font-family:var(--sans);font-size:12.5px;font-weight:700;color:var(--hit-text)}
+.intl{display:inline-block;margin-left:5px;font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:.07em;color:var(--hit-text);border:1px solid var(--hit-text);border-radius:4px;padding:1px 4px;vertical-align:1px}
+.tag{display:inline-block;margin-left:5px;font-family:var(--display);font-size:9px;font-weight:700;letter-spacing:.07em;border:1px solid currentColor;border-radius:4px;padding:1px 4px;vertical-align:1px}
+.tag.pre{color:var(--green)}
+.tag.onl{color:var(--blue)}
+.empty{text-align:center;padding:60px 20px;color:var(--dim);font-family:var(--sans);font-size:14px;line-height:1.7}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(32,21,21,.5);backdrop-filter:blur(4px);z-index:50;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:36px 16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-hover);width:100%;max-width:760px;padding:28px;animation:pop .3s cubic-bezier(.16,1,.3,1)}
+.modal.wide{max-width:1080px}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.modal h2{margin-bottom:18px}
+.mhead{display:flex;align-items:center;margin-bottom:14px}
+.mhead h2{margin:0}
+.seg{font-size:11px;letter-spacing:.1em;color:var(--hit-text);font-weight:600;margin:24px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+/* form de edição em 2 colunas — menos altura, sem precisar rolar */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px}
+.mgrid .seg{margin:0 0 10px}
+.mgrid+.mgrid .seg{margin-top:20px}
+.mcol{display:flex;flex-direction:column}
+.mcol .field{margin-bottom:10px}
+.mcol .row{gap:10px}
+.mcol label{margin-bottom:4px}
+.mcol .field.grow{flex:1;display:flex;flex-direction:column;margin-bottom:0}
+.mcol .field.grow textarea{flex:1;min-height:0;height:100%}
+.datefield{display:flex;align-items:center;gap:6px}
+.datefield input[type=date]{flex:1}
+.moneyfield{display:flex;gap:6px}
+.moneyfield select{flex:0 0 68px;padding:10px 4px;text-align:center}
+.moneyfield input{flex:1}
+.checkline{display:flex;align-items:center;gap:6px;margin-top:7px;font-family:var(--sans);text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:400;color:var(--muted);cursor:pointer}
+.checkline input{width:auto;flex:none}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.modal-foot .left{margin-right:auto}
+/* janela de detalhes (1 clique) */
+.dhead{display:flex;align-items:flex-start;gap:15px;margin-bottom:6px}
+.dhead h2{margin:0;font-size:24px}
+.ddesc{font-size:15px;line-height:1.65;color:var(--muted);margin:10px 0 4px;max-width:62ch}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;margin:18px 0 4px}
+.dkv{display:flex;flex-direction:column;gap:3px}
+.dkv .k{font-size:9.5px;letter-spacing:.09em;color:var(--dim);font-weight:600}
+.dkv .v{font-size:14px;color:var(--text)}
+.dkv .v a{color:var(--hit-text);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--hit-text) 40%,transparent)}
+.dkv .v a:hover{border-bottom-color:var(--hit-text)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--sans);font-size:13px;padding:7px 13px;border:1px solid var(--line2);border-radius:99px;cursor:pointer;color:var(--muted);transition:.16s;user-select:none}
+.chip:hover{border-color:var(--hit);color:var(--text)}
+.chip:active{transform:translateY(1px)}
+.chip.on{background:var(--hit-weak);border-color:var(--hit);color:var(--hit-text);font-weight:600}
+
+.note{font-family:var(--sans);font-size:13px;color:var(--muted);line-height:1.6;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:12px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--text);color:var(--bg);font-family:var(--sans);font-size:13px;font-weight:500;padding:13px 20px;border-radius:10px;z-index:99;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;box-shadow:var(--shadow-hover)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.list-min{display:flex;flex-direction:column;gap:0}
+.list-min .it{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:padding-left .15s}
+.list-min .it:last-child{border-bottom:none}
+.list-min .it:hover{padding-left:4px}
+.list-min .it .rk{font-family:var(--sans);font-weight:600;font-size:12px;color:var(--dim);width:24px}
+.list-min .it .nm{font-size:13.5px;color:var(--text);font-weight:600}
+.list-min .it .mt{font-family:var(--sans);font-size:11px;color:var(--dim);margin-left:auto;white-space:nowrap}
+
+/* calendário */
+.cal-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.cal-head select{width:auto;min-width:118px}
+.cal-nav{display:flex;gap:6px}
+.cal-nav .btn{padding:8px 11px}
+.cal-legend{margin-left:auto;display:flex;gap:8px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{font-size:10px;letter-spacing:.09em;color:var(--dim);font-weight:600;text-align:center;padding:6px 0}
+.cal-cell{min-height:104px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 8px;display:flex;flex-direction:column;gap:4px;transition:border-color .15s}
+.cal-cell:not(.blank):hover{border-color:var(--line2)}
+.cal-cell.blank{background:transparent;border:none}
+.cal-cell.today{border-color:var(--hit);box-shadow:0 0 0 1px var(--hit)}
+.cal-dn{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--dim)}
+.cal-ev{font-size:11px;line-height:1.3;padding:3px 7px;border-radius:6px;cursor:pointer;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:filter .14s}
+.cal-ev:hover{filter:brightness(1.07)}
+.cal-ev.conf{background:var(--band-good)}
+.cal-ev.aval{background:var(--band-warn)}
+.cal-ev.prazo{border:1px dashed rgba(255,255,255,.75)}
+
+/* refinamentos: organização & simetria */
+.card-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:13px}
+.card-h h3{margin-bottom:0}
+.card.stat{display:flex;flex-direction:column;justify-content:center;min-height:110px}
+.card.stat .big{margin-top:6px}
+#evTable th:nth-child(7),#evTable td:nth-child(7),#evTable th:nth-child(8),#evTable td:nth-child(8){text-align:right}
+#evTable thead th{position:sticky;top:64px;background:var(--panel);z-index:5}
+#pmTable th:nth-child(6),#pmTable td:nth-child(6){text-align:right}
+#pmTable thead th{position:sticky;top:64px;background:var(--panel);z-index:5}
+
+/* acessibilidade */
+:focus-visible{outline:2px solid var(--hit);outline-offset:2px}
+
+@media(max-width:900px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .dgrid{grid-template-columns:1fr}
+  .top{flex-wrap:wrap;height:auto;padding:12px 18px;gap:12px}
+  main{padding:22px 16px 50px}
+  .modal{padding:20px}
+  .mgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body data-new-gr-c-s-check-loaded="14.1304.0" data-gr-ext-installed="">
+<div class="top">
+  <div class="brand">
+    <img class="brandlogo" src="data:image/png;base64,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" alt="paraéllo">
+    <small>Radar de Eventos · H2 2026</small>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab" data-v="painel">Painel</button>
+    <button class="tab" data-v="eventos">Eventos</button>
+    <button class="tab active" data-v="premiacoes">Premiações</button>
+    <button class="tab" data-v="calendario">Calendário</button>
+    <button class="tab" data-v="dados">Dados</button>
+  </div>
+  <div class="right">
+    <button class="btn pri sm" id="addBtn">+ Evento</button>
+    <button class="btn sm" id="saveHtmlBtn" title="Salvar uma cópia deste app (.html) com os eventos atuais embutidos — você escolhe a pasta ou sobrescreve o próprio arquivo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h7"></path></svg>Salvar</button>
+    <button class="icon-btn" id="themeBtn" title="Tema claro/escuro" aria-label="Alternar tema"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></button>
+  </div>
+</div>
+
+<main>
+  <!-- PAINEL -->
+  <section class="view" id="v-painel">
+    <h2>Painel</h2>
+    <div class="sub">Visão geral e orçamento, com eventos e premiações organizados por proximidade de data.</div>
+
+    <div class="grid g2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="kic">Orçamento de eventos</div>
+        <div class="row" style="margin-top:12px;align-items:flex-end">
+          <div class="field" style="margin:0">
+            <label>Verba total (R$)</label>
+            <input type="number" id="budgetInput" min="0" step="500" placeholder="ainda não definido">
+          </div>
+        </div>
+        <div class="budget-bar"><i class="used" id="budgetUsed" style="width: 0%;"></i></div>
+        <div class="legend">
+          <span><span class="dot" style="background:var(--par)"></span>Comprometido <b id="lblUsed">R$ 0</b></span>
+          <span><span class="dot" style="background:var(--green)"></span>Restante <b id="lblLeft">—</b></span>
+          <span class="dim" id="lblNote">defina a verba acima</span>
+        </div>
+      </div>
+      <div class="grid g3" style="gap:12px">
+        <div class="card soft stat"><div class="kic">Mapeados</div><div class="big" id="kMapeados">19</div></div>
+        <div class="card soft stat"><div class="kic">A avaliar</div><div class="big" id="kAval" style="color:var(--amber)">19</div></div>
+        <div class="card soft stat"><div class="kic">Inscritos</div><div class="big" id="kInsc" style="color:var(--hit)">0</div></div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:16px">
+      <div class="card">
+        <h3>Próximas datas · eventos</h3>
+        <div class="list-min" id="nextList"><div class="it" data-id="e5"><span class="nm">CASACOR São Paulo 2026 (39ª ed.)</span><span class="mt">De 02/06 até 09/08/2026</span></div><div class="it" data-id="e1"><span class="nm">Formóbile 2026 (11ª ed.)</span><span class="mt">De 30/06 até 03/07/2026</span></div><div class="it" data-id="e2"><span class="nm">ABIMAD'42 2026 (ago)</span><span class="mt">De 03/08 até 06/08/2026</span></div><div class="it" data-id="e4"><span class="nm">ABUP Show 2026 (inverno · Pro Magno)</span><span class="mt">De 10/08 até 13/08/2026</span></div><div class="it" data-id="e3"><span class="nm">ABCasa Fair 2026 (ago)</span><span class="mt">De 12/08 até 15/08/2026</span></div></div>
+      </div>
+      <div class="card">
+        <h3>Próximos prazos · premiações</h3>
+        <div class="list-min" id="nextListPrem"><div class="it" data-id="e9"><span class="nm">Prêmio Design da Movelaria Nacional (ABIMÓVEL)</span><span class="mt">07/07/2026</span></div><div class="it" data-id="e10"><span class="nm">Design For a Better World Award 2026 (DFBW)</span><span class="mt">26/07/2026</span></div><div class="it" data-id="e11"><span class="nm">iF Design Award 2027</span><span class="mt">18/09/2026</span></div><div class="it" data-id="e19"><span class="nm">A' Design Award &amp; Competition (Furniture Design)</span><span class="mt">30/09/2026</span></div><div class="it" data-id="e12"><span class="nm">ADC 106th Annual Awards</span><span class="mt">01/01/2027</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENTOS -->
+  <section class="view" id="v-eventos">
+    <h2>Eventos</h2>
+    <div class="sub">Clique numa linha para abrir a ficha. Posição = ordem por proximidade de data.</div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.4-3.4"></path></svg>
+        <input type="search" id="search" placeholder="Buscar evento ou organizador">
+      </div>
+      <select id="fSetor"><option value="">Todos os setores</option><option>Mobiliário &amp; Design</option><option>Decoração &amp; Casa</option><option>Arquitetura &amp; Interiores</option><option>Arte &amp; Cultura</option><option>Varejo &amp; Consumo</option><option>Prêmios &amp; Concursos</option><option>Transversal</option></select>
+      <select id="fStatus"><option value="">Todos os status</option><option>A avaliar</option><option>Aprovado</option><option>Inscrito</option><option>Descartado</option></select>
+      <select id="fEscopo"><option value="">Nacional + Intl</option><option value="Nacional">Nacional</option><option value="Internacional">Internacional</option></select>
+      <span class="tb-prof"><label>Ordenar</label>
+        <select id="sortKey">
+          <option value="dataKey">Data do evento</option>
+          <option value="prazoKey">Prazo inscrição</option>
+          <option value="tipo">Tipo</option>
+          <option value="nome">Nome</option>
+          <option value="setor">Setor</option>
+          <option value="geo">Local</option>
+          <option value="ingresso">Preço (R$/pessoa)</option>
+          <option value="custo">Custo real</option>
+          <option value="status">Status</option>
+        </select>
+        <select id="sortDir"><option value="asc">Crescente ↑</option><option value="desc">Decrescente ↓</option></select>
+      </span>
+      <button class="btn sm" id="clearF">Limpar</button>
+      <span style="margin-left:auto"></span>
+      <button class="btn pri sm" id="addBtn2">+ Adicionar evento</button>
+    </div>
+    <div class="card" style="padding:6px 6px 0">
+      <table id="evTable">
+        <thead><tr>
+          <th data-s="pos">#</th><th data-s="nome">Evento</th><th data-s="setor">Setor</th>
+          <th data-s="geo">Local</th><th data-s="prazoKey">Prazo inscr.</th><th data-s="dataKey">Data do evento</th><th data-s="ingresso">R$/pessoa</th>
+          <th data-s="custo">Custo real</th><th data-s="status">Status</th>
+        </tr></thead>
+        <tbody id="evBody"><tr data-id="e5">
+      <td><span class="pos">2º</span></td>
+      <td><b>CASACOR São Paulo 2026 (39ª ed.)</b><div class="geo">CASACOR / Editora Abril</div></td>
+      <td><span class="badge">Arquitetura &amp; Interiores</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 02/06 até 09/08/2026</td>
+      <td>R$ 141</td>
+      <td><b>R$ 141</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e1">
+      <td><span class="pos">1º</span></td>
+      <td><b>Formóbile 2026 (11ª ed.)</b><div class="geo">Informa Markets</div></td>
+      <td><span class="badge">Mobiliário &amp; Design</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 30/06 até 03/07/2026</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><b>R$ 0</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e2">
+      <td><span class="pos">3º</span></td>
+      <td><b>ABIMAD'42 2026 (ago)</b><div class="geo">ABIMAD — Indústrias de Móveis de Alta Decoração</div></td>
+      <td><span class="badge">Mobiliário &amp; Design</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 03/08 até 06/08/2026</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><b>R$ 0</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e4">
+      <td><span class="pos">4º</span></td>
+      <td><b>ABUP Show 2026 (inverno · Pro Magno)</b><div class="geo">ABUP — Casa, Decoração, Presentes e Utilidades</div></td>
+      <td><span class="badge">Decoração &amp; Casa</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 10/08 até 13/08/2026</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><b>R$ 0</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e3">
+      <td><span class="pos">5º</span></td>
+      <td><b>ABCasa Fair 2026 (ago)</b><div class="geo">ABCasa — Artigos para Casa</div></td>
+      <td><span class="badge">Decoração &amp; Casa</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 12/08 até 15/08/2026</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><b>R$ 0</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e6">
+      <td><span class="pos">6º</span></td>
+      <td><b>ABUP Show (verão · Distrito Anhembi)</b><div class="geo">ABUP — Casa, Decoração, Presentes e Utilidades</div></td>
+      <td><span class="badge">Decoração &amp; Casa</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 14/02 até 17/02/2027</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><b>R$ 0</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e7">
+      <td><span class="pos">7º</span></td>
+      <td><b>SP–Arte 2027 (20ª ed.)</b><div class="geo">SP–Arte (Fundação Bienal)</div></td>
+      <td><span class="badge">Arte &amp; Cultura</span></td>
+      <td><span class="geo">São Paulo<span class="intl">INTL</span><span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">De 07/04 até 11/04/2027</td>
+      <td>R$ 120</td>
+      <td><b>R$ 120</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e8">
+      <td><span class="pos">8º</span></td>
+      <td><b>DW! Semana de Design de São Paulo</b><div class="geo">DW! (Sec. de Cultura e Economia Criativa SP)</div></td>
+      <td><span class="badge">Mobiliário &amp; Design</span></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span></span></td>
+      <td class="geo">—</td>
+      <td class="geo">—</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><b>R$ 0</b><div class="geo">1p</div></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr></tbody>
+      </table>
+      <div class="empty" id="evEmpty" style="display: none;">Nenhum evento ainda. Clique em <b>+ Adicionar evento</b> ou importe um JSON na aba Dados.</div>
+    </div>
+  </section>
+
+  <!-- PREMIAÇÕES -->
+  <section class="view active" id="v-premiacoes">
+    <h2>Premiações</h2>
+    <div class="sub">Prêmios e concursos de design. Clique numa linha para abrir a ficha. Posição = ordem por proximidade de data.</div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.4-3.4"></path></svg>
+        <input type="search" id="pmSearch" placeholder="Buscar prêmio ou organizador">
+      </div>
+      <select id="pmStatus"><option value="">Todos os status</option><option>A avaliar</option><option>Aprovado</option><option>Inscrito</option><option>Descartado</option></select>
+      <select id="pmEscopo"><option value="">Nacional + Intl</option><option value="Nacional">Nacional</option><option value="Internacional">Internacional</option></select>
+      <span class="tb-prof"><label>Ordenar</label>
+        <select id="pmSortKey">
+          <option value="prazoKey" selected="">Prazo inscrição</option>
+          <option value="nome">Nome</option>
+          <option value="geo">Local</option>
+          <option value="ingresso">Taxa (R$)</option>
+          <option value="status">Status</option>
+        </select>
+        <select id="pmSortDir"><option value="asc" selected="">Crescente ↑</option><option value="desc">Decrescente ↓</option></select>
+      </span>
+      <button class="btn sm" id="pmClearF">Limpar</button>
+      <span style="margin-left:auto"></span>
+      <button class="btn pri sm" id="addPrem">+ Adicionar premiação</button>
+    </div>
+    <div class="card" style="padding:6px 6px 0">
+      <table id="pmTable">
+        <thead><tr>
+          <th data-s="pos">#</th><th data-s="nome">Premiação</th>
+          <th data-s="geo">Local</th><th data-s="prazoKey">Prazo inscr.</th><th data-s="ingresso">Taxa (R$)</th>
+          <th data-s="status">Status</th>
+        </tr></thead>
+        <tbody id="pmBody"><tr data-id="e9">
+      <td><span class="pos">1º</span></td>
+      <td><b>Prêmio Design da Movelaria Nacional (ABIMÓVEL)</b><div class="geo">ABIMÓVEL, com apoio da ApexBrasil</div></td>
+      <td><span class="geo">São Paulo<span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">07/07/2026</td>
+      <td>R$ 180</td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e10">
+      <td><span class="pos">2º</span></td>
+      <td><b>Design For a Better World Award 2026 (DFBW)</b><div class="geo">Centro Brasil Design (CBD)</div></td>
+      <td><span class="geo">Curitiba (PR)<span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">26/07/2026</td>
+      <td>R$ 420</td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e11">
+      <td><span class="pos">3º</span></td>
+      <td><b>iF Design Award 2027</b><div class="geo">iF International Forum Design GmbH</div></td>
+      <td><span class="geo">Hannover (Alemanha)<span class="intl">INTL</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">18/09/2026</td>
+      <td>€ 400</td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e19">
+      <td><span class="pos">4º</span></td>
+      <td><b>A' Design Award &amp; Competition (Furniture Design)</b><div class="geo">OMC Design Studios SRL</div></td>
+      <td><span class="geo">Como (Itália)<span class="intl">INTL</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">30/09/2026</td>
+      <td><span class="geo">Verificar</span></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e12">
+      <td><span class="pos">5º</span></td>
+      <td><b>ADC 106th Annual Awards</b><div class="geo">The One Club for Creativity</div></td>
+      <td><span class="geo">Nova York (EUA)<span class="intl">INTL</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">01/01/2027</td>
+      <td>US$ 260</td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e14">
+      <td><span class="pos">6º</span></td>
+      <td><b>Prêmio Design Museu da Casa Brasileira (MCB)</b><div class="geo">Museu da Casa Brasileira / APAC-SP</div></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">—</td>
+      <td><span class="preco-gratis">Grátis</span></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e15">
+      <td><span class="pos">7º</span></td>
+      <td><b>10º Prêmio Objeto Brasileiro (Museu A CASA)</b><div class="geo">Museu A CASA — Museu do Objeto Brasileiro</div></td>
+      <td><span class="geo">São Paulo<span class="tag pre" title="Presencial">PRE</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">—</td>
+      <td><span class="geo">Verificar</span></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e13">
+      <td><span class="pos">8º</span></td>
+      <td><b>Prêmio Salão Design (Movelsul)</b><div class="geo">MOVERGS / Sindmóveis — Movelsul Brasil</div></td>
+      <td><span class="geo">Bento Gonçalves (RS)<span class="tag pre" title="Presencial">PRE</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">—</td>
+      <td><span class="geo">Verificar</span></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e16">
+      <td><span class="pos">9º</span></td>
+      <td><b>LAD Awards (Latin American Design)</b><div class="geo">LAD — Latin American Design</div></td>
+      <td><span class="geo">Lima (Peru)<span class="intl">INTL</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">—</td>
+      <td>R$ 495</td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e17">
+      <td><span class="pos">10º</span></td>
+      <td><b>Red Dot Award: Product Design 2027</b><div class="geo">Red Dot GmbH &amp; Co. KG</div></td>
+      <td><span class="geo">Essen (Alemanha)<span class="intl">INTL</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">—</td>
+      <td>R$ 2.914</td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr><tr data-id="e18">
+      <td><span class="pos">11º</span></td>
+      <td><b>D&amp;AD Awards 2027</b><div class="geo">D&amp;AD (Design and Art Direction)</div></td>
+      <td><span class="geo">Londres (Reino Unido)<span class="intl">INTL</span><span class="tag onl" title="Online">ONL</span></span></td>
+      <td class="geo">—</td>
+      <td><span class="geo">Verificar</span></td>
+      <td><span class="badge" style="border-color:var(--amber);color:var(--amber)">A avaliar</span></td>
+    </tr></tbody>
+      </table>
+      <div class="empty" id="pmEmpty" style="display:none">Nenhuma premiação ainda. Clique em <b>+ Adicionar premiação</b> ou importe um JSON na aba Dados.</div>
+    </div>
+  </section>
+
+  <!-- CALENDÁRIO -->
+  <section class="view" id="v-calendario">
+    <h2>Calendário</h2>
+    <div class="sub">Eventos posicionados pela data do evento; premiações pela data-limite de inscrição (marcadas “Prazo ·”, com borda tracejada). Filtre por tipo e status acima.</div>
+    <div class="cal-head">
+      <select id="calMonth"><option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option></select>
+      <select id="calYear"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>
+      <div class="cal-nav"><button class="btn sm" id="calPrev" aria-label="Mês anterior"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"></path></svg></button><button class="btn sm" id="calToday">Hoje</button><button class="btn sm" id="calNext" aria-label="Próximo mês"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></button></div>
+      <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <div class="cal-legend" style="margin-left:0">
+          <span class="chip on" id="tEvt" data-t="evt"><span class="dot" style="background:var(--hit)"></span>Eventos</span>
+          <span class="chip on" id="tPrem" data-t="prem"><span class="dot" style="background:var(--blue)"></span>Premiações</span>
+        </div>
+        <div class="cal-legend" style="margin-left:0">
+          <span class="chip on" id="tConf" data-c="conf"><span class="dot" style="background:var(--band-good)"></span>Confirmados</span>
+          <span class="chip on" id="tAval" data-c="aval"><span class="dot" style="background:var(--band-warn)"></span>A avaliar</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cal-grid" id="calDow"><div class="cal-dow">Dom</div><div class="cal-dow">Seg</div><div class="cal-dow">Ter</div><div class="cal-dow">Qua</div><div class="cal-dow">Qui</div><div class="cal-dow">Sex</div><div class="cal-dow">Sáb</div></div>
+      <div class="cal-grid" id="calGrid" style="margin-top:6px"><div class="cal-cell blank"></div><div class="cal-cell blank"></div><div class="cal-cell blank"></div><div class="cal-cell"><span class="cal-dn">1</span></div><div class="cal-cell today"><span class="cal-dn">2</span></div><div class="cal-cell"><span class="cal-dn">3</span></div><div class="cal-cell"><span class="cal-dn">4</span></div><div class="cal-cell"><span class="cal-dn">5</span></div><div class="cal-cell"><span class="cal-dn">6</span></div><div class="cal-cell"><span class="cal-dn">7</span><div class="cal-ev aval prazo" data-id="e9" title="Prêmio Design da Movelaria Nacional (ABIMÓVEL) · prazo de inscrição · A avaliar">Prazo · Prêmio Design da Movelaria Nacional (ABIMÓVEL)</div></div><div class="cal-cell"><span class="cal-dn">8</span></div><div class="cal-cell"><span class="cal-dn">9</span></div><div class="cal-cell"><span class="cal-dn">10</span></div><div class="cal-cell"><span class="cal-dn">11</span></div><div class="cal-cell"><span class="cal-dn">12</span></div><div class="cal-cell"><span class="cal-dn">13</span></div><div class="cal-cell"><span class="cal-dn">14</span></div><div class="cal-cell"><span class="cal-dn">15</span></div><div class="cal-cell"><span class="cal-dn">16</span></div><div class="cal-cell"><span class="cal-dn">17</span></div><div class="cal-cell"><span class="cal-dn">18</span></div><div class="cal-cell"><span class="cal-dn">19</span></div><div class="cal-cell"><span class="cal-dn">20</span></div><div class="cal-cell"><span class="cal-dn">21</span></div><div class="cal-cell"><span class="cal-dn">22</span></div><div class="cal-cell"><span class="cal-dn">23</span></div><div class="cal-cell"><span class="cal-dn">24</span></div><div class="cal-cell"><span class="cal-dn">25</span></div><div class="cal-cell"><span class="cal-dn">26</span><div class="cal-ev aval prazo" data-id="e10" title="Design For a Better World Award 2026 (DFBW) · prazo de inscrição · A avaliar">Prazo · Design For a Better World Award 2026 (DFBW)</div></div><div class="cal-cell"><span class="cal-dn">27</span></div><div class="cal-cell"><span class="cal-dn">28</span></div><div class="cal-cell"><span class="cal-dn">29</span></div><div class="cal-cell"><span class="cal-dn">30</span></div><div class="cal-cell"><span class="cal-dn">31</span></div></div>
+    </div>
+  </section>
+
+  <!-- DADOS -->
+  <section class="view" id="v-dados">
+    <h2>Dados</h2>
+    <div class="sub">Tudo salvo no navegador (localStorage). Exporte/importe JSON para backup e para a varredura mensal.</div>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Exportar</h3>
+        <p style="color:var(--muted);margin-bottom:16px;line-height:1.6">JSON = fonte da verdade (inclui pesos, estimativas e orçamento). CSV = abrir no Excel/Sheets.</p>
+        <div class="row"><button class="btn" id="expJson"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 21h14"></path></svg>Exportar JSON</button><button class="btn" id="expCsv"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 11 5 5 5-5"></path><path d="M5 21h14"></path></svg>Exportar CSV</button></div>
+      </div>
+      <div class="card">
+        <h3>Importar (varredura mensal)</h3>
+        <p style="color:var(--muted);margin-bottom:16px;line-height:1.6">Mescla eventos novos sem apagar os existentes nem suas edições manuais. Duplicados (mesmo nome + data) são ignorados.</p>
+        <input type="file" id="impFile" accept="application/json">
+        <div class="note" id="impInfo"><b>19</b> novos importados · <b>0</b> duplicados ignorados.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Zona de manutenção</h3>
+      <div class="row" style="margin-top:6px">
+        <button class="btn sm" id="seedBtn">Carregar 3 exemplos</button>
+        <button class="btn sm danger" id="wipeBtn">Apagar tudo</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px">
+        <div>
+          <h3>Prompt para nova pesquisa (IA)</h3>
+          <p style="color:var(--muted);margin:6px 0 0;line-height:1.6;max-width:62ch">Copie e envie ao Claude (ou outra IA com busca na web) sempre que quiser uma nova leva de eventos. Ele já inclui o formato exato do JSON para que o arquivo gerado importe sem erro. Salve a resposta como <code>.json</code> e importe acima.</p>
+        </div>
+        <button class="btn pri sm" id="copyPromptBtn" style="flex:none"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Copiar prompt</button>
+      </div>
+      <textarea id="promptBox" readonly="" spellcheck="false" style="width:100%;margin-top:14px;min-height:280px;resize:vertical;font-family:var(--mono);font-size:12px;line-height:1.55;padding:14px;border:1px solid var(--line2);border-radius:8px;background:var(--panel2);color:var(--text)"></textarea>
+    </div>
+  </section>
+</main>
+
+<div class="modal-bg open" id="modalBg"><div class="modal" id="modal">
+    <div class="dhead">
+      <div><h2>Prêmio Design da Movelaria Nacional (ABIMÓVEL)</h2><div class="geo" style="margin-top:4px">ABIMÓVEL, com apoio da ApexBrasil</div></div>
+    </div>
+    <div class="chips" style="margin:10px 0 2px">
+      <span class="badge">Prêmios &amp; Concursos</span>
+      <span class="badge">Prêmio/Concurso</span>
+      <span class="badge">São Paulo<span class="tag onl" title="Online">ONL</span></span>
+    </div>
+    <p class="ddesc">Prêmio nacional de design de mobiliário da ABIMÓVEL; peças vencedoras são expostas na área Brasil do Salão do Móvel de Milão (iSaloni). Vitrine de alto prestígio e PR perfeitamente aderente à Paraéllo.</p>
+    <div class="dgrid">
+      <div class="dkv"><span class="k">Prazo inscrição</span><span class="v">07/07/2026</span></div>
+      <div class="dkv"><span class="k">Data do evento</span><span class="v">—</span></div>
+      <div class="dkv"><span class="k">Local · modalidade</span><span class="v">São Paulo · Online</span></div>
+      <div class="dkv"><span class="k">Ingresso / pessoa</span><span class="v">R$ 180</span></div>
+      <div class="dkv"><span class="k">Custo real (1p)</span><span class="v">R$ 180</span></div>
+      <div class="dkv"><span class="k">Conteúdo planejado</span><span class="v">—</span></div>
+      <div class="dkv"><span class="k">Fases</span><span class="v">—</span></div>
+      <div class="dkv"><span class="k">Link</span><span class="v"><a href="https://mkt.abimovel.com/premiodesign?utm_source=Link+da+Bio+do+RD+Station&amp;utm_medium=social&amp;utm_campaign=CTA+no+Link+da+Bio" target="_blank" rel="noopener">abrir site ↗</a></span></div>
+    </div>
+    <div class="note"><b>Observação:</b> ATUALIZADO conforme planilha interna: prazo de inscrição 07/07/2026, taxa R$180. Local: São Paulo.</div>
+    <div class="seg" style="margin-top:18px">Status</div>
+    <select id="d_status" style="max-width:260px"><option selected="">A avaliar</option><option>Aprovado</option><option>Inscrito</option><option>Descartado</option></select>
+    <div class="modal-foot">
+      <button class="btn left" id="d_edit"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 0 0-2.8-2.8L5 17.2 4 20Z"></path><path d="m14 7 3 3"></path></svg> Editar detalhes</button>
+      <button class="btn pri" id="d_close">Fechar</button>
+    </div></div></div>
+<div class="toast" id="toast">Evento salvo</div>
+
+<script>
+"use strict";
+/* ---------- ícones ---------- */
+const ICON={
+  sun:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8Z"/></svg>',
+  pencil:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 0 0-2.8-2.8L5 17.2 4 20Z"/><path d="m14 7 3 3"/></svg>'
+};
+
+/* ---------- constantes ---------- */
+const SETORES=['Mobiliário & Design','Decoração & Casa','Arquitetura & Interiores','Arte & Cultura','Varejo & Consumo','Prêmios & Concursos','Transversal','Outro'];
+const TIPOS=['Feira','Mostra','Bienal','Prêmio/Concurso','Congresso','Summit','Workshop','Outro'];
+const GEOS=[{k:'sp',n:'São Paulo',rank:1},{k:'brasil',n:'Outras BR',rank:2},{k:'intl',n:'Internacional',rank:3}];
+const STATUS=['A avaliar','Aprovado','Inscrito','Descartado'];
+const FORMATOS=['Post LinkedIn','Reels / vídeo','Case / depoimento','Newsletter','Cobertura ao vivo','Foto / branding'];
+const MOMENTOS=['Antes','Durante','Depois'];
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DOW=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+/* ---------- estado ---------- */
+const KEY='radar-eventos-paraello';
+const VKEY='radar-eventos-paraello-ver';
+const DATA_VERSION='2026-07-01-preco-status'; /* mude este valor sempre que os dados embutidos forem corrigidos, para forçar a limpeza do localStorage e recarregar do zero */
+const clone=o=>JSON.parse(JSON.stringify(o));
+/* Dados embutidos pelo botão "Salvar arquivo" — servem de semente quando o localStorage está vazio (ex.: abrir o .html em outro PC). */
+/*RADAR_EMBED_START*/const EMBEDDED_STATE={"budget":null,"est":{"sp":{"d":0,"h":0},"brasil":{"d":1200,"h":1500},"intl":{"d":6000,"h":4000}},"events":[{"nome":"Formóbile 2026 (11ª ed.)","organizador":"Informa Markets","link":"https://www.formobile.com.br/pt/home.html","fonte":"formobile.com.br; Móveis de Valor","data":"De 30/06 até 03/07/2026","dataKey":"2026-06-30","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Mobiliário & Design","tipo":"Feira","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Maior evento moveleiro da América Latina (São Paulo Expo), focado em máquinas, insumos, matérias-primas e tecnologia de produção. Para a Paraéllo vale mais como inteligência de fornecedores e tendências de materiais/acabamentos do que como canal de especificação A/B.","obs":"VERIFICADO (jun/2026): gratuito mediante credenciamento profissional; datas/venue confirmados (formobile.com.br). Perfil industrial/fabril — baixa densidade de arquitetos de alto padrão.","id":"e1","dataFimKey":"2026-07-03","gratuito":true},{"nome":"ABIMAD'42 2026 (ago)","organizador":"ABIMAD — Indústrias de Móveis de Alta Decoração","link":"https://www.abimad.com.br/pt/","fonte":"abimad.com.br; portalbrasil.com.br","data":"De 03/08 até 06/08/2026","dataKey":"2026-08-03","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Mobiliário & Design","tipo":"Feira","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Principal feira de negócios de móveis e acessórios de alta decoração da América Latina (São Paulo Expo), exclusiva para lojistas multimarca, arquitetos, decoradores e designers. Encaixe quase perfeito com a Paraéllo: público A/B, especificação e canal de revenda.","obs":"VERIFICADO (jun/2026): entrada trade gratuita mediante credenciamento profissional; datas/venue confirmados. Há também a edição de janeiro (ABIMAD'41). Maior aderência da leva.","id":"e2","dataFimKey":"2026-08-06","gratuito":true},{"nome":"ABCasa Fair 2026 (ago)","organizador":"ABCasa — Artigos para Casa","link":"https://www.abcasa.org.br/abcasa-fair","fonte":"expocenternorte.com.br; portalradar.com.br","data":"De 12/08 até 15/08/2026","dataKey":"2026-08-12","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Decoração & Casa","tipo":"Feira","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Maior feira de casa & decoração da América Latina (Expo Center Norte, SP), +380 expositores e ~45 mil visitantes qualificados. Forte para a Paraéllo no canal de lojistas multimarca e leitura de tendências, com foco mais amplo de casa/decoração do que mobiliário de alto padrão.","obs":"VERIFICADO (jun/2026): exclusiva para lojistas/profissionais mediante credenciamento; datas/venue confirmados (Expo Center Norte, Vila Guilherme).","id":"e3","dataFimKey":"2026-08-15","gratuito":true},{"nome":"ABUP Show 2026 (inverno · Pro Magno)","organizador":"ABUP — Casa, Decoração, Presentes e Utilidades","link":"https://www.abup.com.br/abupshow_promagno/","fonte":"abup.com.br; portalradar.com.br","data":"De 10/08 até 13/08/2026","dataKey":"2026-08-10","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Decoração & Casa","tipo":"Feira","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Feira de decoração, design autoral, presentes, mesa e têxteis (Pro Magno, SP), voltada a lojistas, arquitetos, designers, paisagistas e hotelaria. Densidade de lojistas multimarca e design autoral, complementar à ABCasa na mesma janela de agosto.","obs":"VERIFICADO (jun/2026): credenciamento gratuito para lojistas e profissionais; data oficial 10–13/08 (um release antigo citava 12–15/08, da edição anterior).","id":"e4","dataFimKey":"2026-08-13","gratuito":true},{"nome":"CASACOR São Paulo 2026 (39ª ed.)","organizador":"CASACOR / Editora Abril","link":"https://casacor.abril.com.br/pt-BR/mostras/sao-paulo-2026","fonte":"appcasacor.com.br; encontrasaopaulo.com.br","data":"De 02/06 até 09/08/2026","dataKey":"2026-06-02","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Arquitetura & Interiores","tipo":"Mostra","ingresso":141,"pessoas":1,"status":"A avaliar","descricao":"Maior mostra de arquitetura, design de interiores e paisagismo das Américas (Parque da Água Branca, SP), com ~70 ambientes assinados. Vitrine essencial para a Paraéllo observar tendências de mobiliário/materiais/cor e fazer networking com o canal de especificação.","obs":"VERIFICADO (jun/2026): datas/venue confirmados; ingresso a partir de R$ 70,50 avulso (41% da área gratuita c/ cadastro). A planilha citava ~R$141 (provável passaporte) — usei o mínimo confirmado. Em cartaz até 9/ago.","id":"e5","desloc":0,"hosp":0,"formatos":[],"momentos":[],"conteudoDesc":"","dataFimKey":"2026-08-09"},{"nome":"ABUP Show (verão · Distrito Anhembi)","organizador":"ABUP — Casa, Decoração, Presentes e Utilidades","link":"https://www.abup.com.br/abupshow_anhembi/","fonte":"abup.com.br; distritoanhembi.com.br","data":"De 14/02 até 17/02/2027","dataKey":"2027-02-14","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Decoração & Casa","tipo":"Feira","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Maior feira de negócios de decoração, mesa posta, têxteis, presentes e design autoral brasileiro (Distrito Anhembi, SP). Canal direto com lojistas multimarca, magazines e hotelaria — alto potencial comercial e de distribuição para a Paraéllo.","obs":"ATUALIZADO conforme planilha interna: 14–17/02/2027 (mesmo padrão da edição 2026, 14–17/02). A fonte original registrava \"14/28–17/02/2027\" — o \"28\" parece resquício da citação de outra data; usar 14–17/02/2027 como referência até confirmação oficial no site.","id":"e6","dataFimKey":"2027-02-17","gratuito":true},{"nome":"SP–Arte 2027 (20ª ed.)","organizador":"SP–Arte (Fundação Bienal)","link":"https://www.sp-arte.com/sobre-o-evento-sp-arte","fonte":"sp-arte.com; bilheteria.sp-arte.com","data":"De 07/04 até 11/04/2027","dataKey":"2027-04-07","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Internacional","modalidade":"Presencial","setor":"Arte & Cultura","tipo":"Feira","ingresso":120,"pessoas":1,"status":"A avaliar","descricao":"Maior feira internacional de arte e design do Brasil (Pavilhão da Bienal, Ibirapuera), com setor dedicado a design e estúdios autorais. Ambiente de alto padrão e público A/B colecionador, alinhado ao posicionamento de luxo e estética brasileira da Paraéllo.","obs":"VERIFICADO (jun/2026): datas 2027 confirmadas. Preço 2027 não publicado — usei R$50 (inteira) com base em edições recentes (faixa ~R$35–50). A planilha citava ~R$120 (provável passaporte) — validar na bilheteria perto da data.","id":"e7","desloc":0,"hosp":0,"formatos":[],"momentos":[],"conteudoDesc":"","dataFimKey":"2027-04-11"},{"nome":"DW! Semana de Design de São Paulo","organizador":"DW! (Sec. de Cultura e Economia Criativa SP)","link":"https://dwsemanadedesign.com.br/blog/dw15-retrospectiva-com-os-destaques-da-15a-edicao-do-maior-festival-de-design-da-america-latina/","fonte":"dwsemanadedesign.com.br; rsvpperfil.com.br","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Presencial","setor":"Mobiliário & Design","tipo":"Outro","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Maior festival de design da América Latina, espalhado por lojas, galerias e espaços culturais de SP (+120 expositores). Ótima janela para a Paraéllo ativar presença de marca, observar tendências e dialogar com a cena de design e arquitetura.","obs":"CORREÇÃO da planilha: NÃO é agosto. A 15ª ed. foi 5–22/03/2026 (já ocorrida); próxima deve ser mar/2027 (a confirmar). Majoritariamente GRATUITO e distribuído pela cidade. dataKey vazio até a edição 2027.","id":"e8","gratuito":true},{"nome":"Prêmio Design da Movelaria Nacional (ABIMÓVEL)","organizador":"ABIMÓVEL, com apoio da ApexBrasil","link":"https://mkt.abimovel.com/premiodesign?utm_source=Link+da+Bio+do+RD+Station&utm_medium=social&utm_campaign=CTA+no+Link+da+Bio","fonte":"abimovel.com","data":"","dataKey":"","prazo":"07/07/2026","prazoKey":"2026-07-07","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":180,"pessoas":1,"status":"A avaliar","descricao":"Prêmio nacional de design de mobiliário da ABIMÓVEL; peças vencedoras são expostas na área Brasil do Salão do Móvel de Milão (iSaloni). Vitrine de alto prestígio e PR perfeitamente aderente à Paraéllo.","obs":"ATUALIZADO conforme planilha interna: prazo de inscrição 07/07/2026, taxa R$180. Local: São Paulo.","id":"e9","desloc":0,"hosp":0,"formatos":[],"momentos":[],"conteudoDesc":""},{"nome":"Design For a Better World Award 2026 (DFBW)","organizador":"Centro Brasil Design (CBD)","link":"https://dfbwaward.com","fonte":"dfbwaward.com","data":"","dataKey":"","prazo":"26/07/2026","prazoKey":"2026-07-26","geo":"brasil","cidade":"Curitiba (PR)","escopo":"Nacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":420,"pessoas":1,"status":"A avaliar","descricao":"Prêmio promovido pelo Centro Brasil Design, com categoria Design de Produtos incluindo Móveis & Décor. Selo de credibilidade e PR muito aderente ao mobiliário de alto padrão da Paraéllo.","obs":"ATUALIZADO conforme planilha interna: prazo Regular 26/07/2026, taxa R$420 (antes eu havia registrado o prazo final de 4/set — ajustado para a data que consta na planilha).","id":"e10","desloc":0,"hosp":0,"formatos":[],"momentos":[],"conteudoDesc":""},{"nome":"iF Design Award 2027","organizador":"iF International Forum Design GmbH","link":"https://ifdesign.com/","fonte":"ifdesign.com; artinfoland.com","data":"","dataKey":"","prazo":"18/09/2026","prazoKey":"2026-09-18","geo":"intl","cidade":"Hannover (Alemanha)","escopo":"Internacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":400,"pessoas":1,"status":"A avaliar","descricao":"Um dos selos de design mais prestigiados do mundo, com disciplina Product Design e categorias de mobiliário/iluminação. Vencer o iF dá enorme PR internacional e legitimidade global à Paraéllo.","obs":"VERIFICADO (jun/2026): taxa Regular €400 (até 18/set) — registrado agora direto em EUR (antes convertido para R$2.480). Early €300 (até 26/jun, já expirado), Última chamada €500 (até 4/nov). ATENÇÃO: custos extras altos se finalista/vencedor (jury fee €300, winner's fee €2.900–3.300) → custo=2.","id":"e11","moeda":"EUR"},{"nome":"ADC 106th Annual Awards","organizador":"The One Club for Creativity","link":"https://adcawards.org/","fonte":"oneclub.org","data":"","dataKey":"","prazo":"01/01/2027","prazoKey":"2027-01-01","geo":"intl","cidade":"Nova York (EUA)","escopo":"Internacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":260,"pessoas":1,"status":"A avaliar","descricao":"Premiação anual de design e craft do The One Club (NY), com gala. Forte em comunicação/craft (menos foco puro em mobiliário), mas selo internacional de prestígio para o branding/design da Paraéllo.","obs":"PENDÊNCIA: a 106ª ed. só abre inscrições em out/2026; prazo e taxa ainda não oficiais (site mostra a 105ª). Referência usada (planilha interna): prazo 01/01/2027, taxa US$260 (valor da 105ª ed./2025) — registrado agora direto em USD. Confirmar quando a 106ª abrir.","id":"e12","desloc":0,"hosp":0,"formatos":[],"momentos":[],"conteudoDesc":"","moeda":"USD"},{"nome":"Prêmio Salão Design (Movelsul)","organizador":"MOVERGS / Sindmóveis — Movelsul Brasil","link":"https://www.salaodesign.com.br/","fonte":"salaodesign.com.br","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"brasil","cidade":"Bento Gonçalves (RS)","escopo":"Nacional","modalidade":"Híbrido","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Principal prêmio de design de mobiliário do Brasil, ligado à feira Movelsul (Bento Gonçalves/RS). Categorias por tipologia de móvel (Sentar, Aconchegar, Trabalhar etc.) — alta aderência ao portfólio da Paraéllo e selo de prestígio no setor.","obs":"VERIFICADO (jun/2026): inscrições da 27ª ed. (jan–mar/2026) encerradas; exposição na Movelsul 17–20/ago/2026. Taxa não divulgada no site/regulamento → 0. Próxima edição (2027) a confirmar. dataKey vazio.","id":"e13"},{"nome":"Prêmio Design Museu da Casa Brasileira (MCB)","organizador":"Museu da Casa Brasileira / APAC-SP","link":"https://apacsp.org.br/especialmcb/premio-design/premio-design-museu-da-casa-brasileira/","fonte":"apacsp.org.br; mcb.org.br","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Híbrido","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"O mais tradicional prêmio de design brasileiro (desde 1986), realizado pelo MCB em São Paulo. Categorias Produtos (inclui mobiliário) e Trabalhos Escritos. Selo de altíssimo prestígio cultural e institucional para a Paraéllo.","obs":"VERIFICADO (jun/2026): inscrições da 36ª ed. (dez/2025–jan/2026) encerradas; exposição 25/abr–19/jul/2026. INSCRIÇÃO GRATUITA (confirmado) → custo 5. Próxima edição (37ª/2027) a confirmar. dataKey vazio.","id":"e14","gratuito":true},{"nome":"10º Prêmio Objeto Brasileiro (Museu A CASA)","organizador":"Museu A CASA — Museu do Objeto Brasileiro","link":"https://www.acasa.org.br/inscricao-premio","fonte":"acasa.org.br","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"sp","cidade":"","escopo":"Nacional","modalidade":"Híbrido","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Prêmio do Museu A CASA (Pinheiros/SP) que valoriza o objeto e o saber-fazer brasileiro. Categorias Autoral, Coletiva, Socioambiental e Novos Talentos. Forte aderência à estética brasileira da Paraéllo; vencedores expõem no museu.","obs":"VERIFICADO (jun/2026): inscrições da 10ª ed. (19/mar–7/jun/2026) encerradas; exposição/cerimônia nov/2026 (acompanhar). Prêmio R$5.000/categoria; taxa de inscrição não divulgada → 0. dataKey vazio.","id":"e15"},{"nome":"LAD Awards (Latin American Design)","organizador":"LAD — Latin American Design","link":"https://ladawards.org/","fonte":"ladawards.org","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"intl","cidade":"Lima (Peru)","escopo":"Internacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":495,"pessoas":1,"status":"A avaliar","descricao":"Maior premiação de design da América Latina (12 categorias, inclui produto/mobiliário). Reconhecimento regional de prestígio — bom para posicionar a Paraéllo como marca brasileira de design no cenário latino-americano.","obs":"VERIFICADO (jun/2026): inscrições 2026 encerraram em 27/fev. Taxa profissional US$65–120 (registrei Regular US$90≈R$495; US$1≈R$5,5). Existe LAD Grant 100 (gratuito p/ estreantes). Próxima edição a confirmar. dataKey vazio.","id":"e16"},{"nome":"Red Dot Award: Product Design 2027","organizador":"Red Dot GmbH & Co. KG","link":"https://www.red-dot.org/pd/dates-fees","fonte":"red-dot.org/pd/dates-fees","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"intl","cidade":"Essen (Alemanha)","escopo":"Internacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":2914,"pessoas":1,"status":"A avaliar","descricao":"Selo de design de prestígio mundial, com categoria de mobiliário (Living/Bedrooms, Furniture). O 'Red Dot' confere forte PR internacional a peças premium da Paraéllo.","obs":"PENDÊNCIA: edição 2027 ainda não publicada (Red Dot abre a PD ~meados de set). Referência 2026: Early €470≈R$2.914, Regular €690, Latecomer €890; +€700 p/ peças >3m²; €1≈R$6,2. Registrei a faixa Early. Em caso de prêmio, Winner Package extra. dataKey vazio.","id":"e17"},{"nome":"D&AD Awards 2027","organizador":"D&AD (Design and Art Direction)","link":"https://www.dandad.org/awards/d-ad-awards","fonte":"dandad.org","data":"","dataKey":"","prazo":"","prazoKey":"","geo":"intl","cidade":"Londres (Reino Unido)","escopo":"Internacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Prêmio britânico de prestígio (os 'Pencils') com categoria Product Design. Reconhecimento de elite criativa global, ótimo para PR e posicionamento de marca da Paraéllo.","obs":"PENDÊNCIA: ciclo 2026 encerrado (26/mar/2026); edição 2027 não aberta (prazos ~jan–mar por padrão). Taxas por peça em GBP (+VAT só p/ UK), não publicadas em valor fixo aqui; descontos p/ empresas pequenas. dataKey/ingresso vazios até abrir.","id":"e18"},{"nome":"A' Design Award & Competition (Furniture Design)","organizador":"OMC Design Studios SRL","link":"https://competition.adesignaward.com/","fonte":"competition.adesignaward.com","data":"","dataKey":"","prazo":"30/09/2026","prazoKey":"2026-09-30","geo":"intl","cidade":"Como (Itália)","escopo":"Internacional","modalidade":"Online","setor":"Prêmios & Concursos","tipo":"Prêmio/Concurso","ingresso":0,"pessoas":1,"status":"A avaliar","descricao":"Prêmio italiano com categoria dedicada Furniture Design; gala/exposição em Como (Itália), troféu, yearbook e exposição. Bom para PR de mobiliário premium da Paraéllo. (designaward.com redireciona para cá.)","obs":"VERIFICADO (jun/2026): datas do ciclo — Regular 30/set, Última chamada 28/fev, resultados 1/mai. Taxa só via 'Nomination Fee Calculator' (sem valor fixo público; 1ª fase de registro/score é gratuita) → ingresso 0 até cálculo. Organizador: OMC Design Studios, Como/Itália.","id":"e19"}]};/*RADAR_EMBED_END*/
+const defState=()=>({
+  budget:null,
+  est:{sp:{d:0,h:0},brasil:{d:1200,h:1500},intl:{d:6000,h:4000}},
+  events:[]
+});
+function hydrate(r){
+  const b=defState();
+  const s=Object.assign(b,r,{est:Object.assign(b.est,r.est||{})});
+  delete s.profile;delete s.profiles;delete s.names;delete s.order;delete s.customProfiles;delete s.custom;
+  return s;
+}
+let S=load();
+function load(){
+  try{
+    if(localStorage.getItem(VKEY)!==DATA_VERSION){
+      localStorage.removeItem(KEY);
+      localStorage.setItem(VKEY,DATA_VERSION);
+    }else{
+      const r=JSON.parse(localStorage.getItem(KEY));if(r&&r.events)return hydrate(r);
+    }
+  }catch(e){}
+  if(typeof EMBEDDED_STATE!=='undefined'&&EMBEDDED_STATE&&EMBEDDED_STATE.events)return hydrate(EMBEDDED_STATE);
+  return defState();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const money=n=>'R$ '+Math.round(n||0).toLocaleString('pt-BR');
+const CAMBIO={BRL:1,EUR:6.2,USD:5.4}; /* câmbio aproximado p/ converter só o ingresso ao custo real em R$ — ajuste aqui se preciso */
+const SIMBOLO={BRL:'R$',EUR:'€',USD:'US$'};
+function moneyFx(n,moeda){moeda=moeda||'BRL';return SIMBOLO[moeda]+' '+Math.round(n||0).toLocaleString('pt-BR');}
+function precoHtml(e){if(+e.ingresso>0)return moneyFx(e.ingresso,e.moeda);return e.gratuito?'<span class="preco-gratis">Grátis</span>':'<span class="geo">Verificar</span>';}
+function precoText(e){if(+e.ingresso>0)return moneyFx(e.ingresso,e.moeda);return e.gratuito?'Grátis':'Verificar';}
+function parseKey(k){const p=(k||'').split('-').map(Number);return{y:p[0],m:p[1],d:p[2]};}
+const pad2=n=>String(n).padStart(2,'0');
+function fmtDateBR(key){if(!key)return '';const p=parseKey(key);return `${pad2(p.d)}/${pad2(p.m)}/${p.y}`;}
+function fmtDataRange(startKey,endKey){
+  if(!startKey)return '';
+  if(!endKey||endKey===startKey)return fmtDateBR(startKey);
+  const s=parseKey(startKey),e=parseKey(endKey);
+  return `De ${pad2(s.d)}/${pad2(s.m)} até ${pad2(e.d)}/${pad2(e.m)}/${e.y}`;
+}
+function fmtPrazoTxt(key){return fmtDateBR(key);}
+function evDateDisplay(e){return fmtDataRange(e.dataKey,e.dataFimKey)||'—';}
+function evPrazoDisplay(e){return fmtDateBR(e.prazoKey)||'—';}
+const uid=()=>'e'+(S.events.reduce((m,e)=>Math.max(m,+(e.id||'e0').slice(1)||0),0)+1);
+function geoRank(g){return (GEOS.find(x=>x.k===g)||{rank:9}).rank;}
+function geoName(g){return (GEOS.find(x=>x.k===g)||{n:'—'}).n;}
+function locLabel(e){return (e.cidade&&e.cidade.trim())?e.cidade:geoName(e.geo);}
+function isPresencial(e){return /presencial|h[íi]brido/i.test(e.modalidade||'');}
+function isOnline(e){return /online|h[íi]brido/i.test(e.modalidade||'');}
+function modBadges(e){return (isPresencial(e)?'<span class="tag pre" title="Presencial">PRE</span>':'')+(isOnline(e)?'<span class="tag onl" title="Online">ONL</span>':'');}
+function tagsHtml(e){return (e.escopo==='Internacional'?'<span class="intl">INTL</span>':'')+modBadges(e);}
+function custoReal(e){const fx=CAMBIO[e.moeda||'BRL']||1;return ((+e.ingresso||0)*fx+(+e.desloc||0)+(+e.hosp||0))*(+e.pessoas||1);}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function committed(){return S.events.filter(e=>e.status==='Inscrito').reduce((s,e)=>s+custoReal(e),0);}
+function esc(s){return (s==null?'':''+s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function statusColor(s){return s==='Inscrito'?'var(--hit-text)':s==='Aprovado'?'var(--green)':s==='Descartado'?'var(--red)':'var(--amber)';}
+/* ordenação padrão: proximidade de data (evento usa dataKey, premiação usa prazoKey como referência); sem data cadastrada vai para o fim */
+function todayKeyStr(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;}
+const TODAY_KEY=todayKeyStr();
+function refDateKey(e){return (isPremio(e)?e.prazoKey:e.dataKey)||e.prazoKey||e.dataKey||'';}
+function dateDist(e){const k=refDateKey(e);if(!k)return Infinity;const d=Date.parse(k)-Date.parse(TODAY_KEY);return Math.abs(d);}
+function rankCmp(a,b){const d=dateDist(a)-dateDist(b);if(d)return d;return geoRank(a.geo)-geoRank(b.geo);}
+function rankMap(){const m={};[...S.events].sort(rankCmp).forEach((e,i)=>m[e.id]=i+1);return m;}
+
+/* ---------- tema ---------- */
+const root=document.documentElement;
+function applyTheme(t){root.dataset.theme=t;$('themeBtn').innerHTML=t==='dark'?ICON.moon:ICON.sun;try{localStorage.setItem('radar-theme',t)}catch(e){}}
+applyTheme((()=>{try{return localStorage.getItem('radar-theme')||'light'}catch(e){return 'light'}})());
+$('themeBtn').onclick=()=>applyTheme(root.dataset.theme==='dark'?'light':'dark');
+
+/* ---------- navegação ---------- */
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+b.dataset.v));
+});
+
+/* ---------- painel ---------- */
+function renderPainel(){
+  const evs=S.events;
+  $('kMapeados').textContent=evs.length;
+  $('kAval').textContent=evs.filter(e=>e.status==='A avaliar').length;
+  $('kInsc').textContent=evs.filter(e=>e.status==='Inscrito').length;
+  const used=committed(), tot=S.budget;
+  $('lblUsed').textContent=money(used);
+  if(tot!=null && tot>0){
+    $('lblLeft').textContent=money(tot-used);
+    $('budgetUsed').style.width=Math.min(100,used/tot*100)+'%';
+    $('lblNote').innerHTML=(used>tot?'<span style="color:var(--red);font-weight:600">acima do orçamento</span>':'');
+  }else{$('lblLeft').textContent='—';$('budgetUsed').style.width='0%';$('lblNote').textContent='defina a verba acima';}
+  const renderNext=(elId,arr,keyf)=>{$(elId).innerHTML=arr.length?arr.map(e=>`<div class="it" data-id="${e.id}"><span class="nm">${esc(e.nome)}</span><span class="mt">${esc(keyf(e))}</span></div>`).join(''):'<div class="empty" style="padding:24px">sem datas cadastradas</div>';};
+  renderNext('nextList',eventosList().filter(e=>e.dataKey).sort((a,b)=>a.dataKey.localeCompare(b.dataKey)).slice(0,5),evDateDisplay);
+  renderNext('nextListPrem',premiosList().filter(e=>e.prazoKey).sort((a,b)=>a.prazoKey.localeCompare(b.prazoKey)).slice(0,5),evPrazoDisplay);
+  document.querySelectorAll('#v-painel .list-min .it').forEach(it=>it.onclick=()=>openDetail(it.dataset.id));
+}
+
+/* ---------- eventos & premiações ---------- */
+/* Premiação = prêmio/concurso. Distinção vive em tipo/setor (vinda do JSON), então
+   eventos novos importados caem na aba certa automaticamente. */
+const isPremio=e=>e.tipo==='Prêmio/Concurso'||e.setor==='Prêmios & Concursos';
+const eventosList=()=>S.events.filter(e=>!isPremio(e));
+const premiosList=()=>S.events.filter(e=>isPremio(e));
+function rankMapOf(list){const m={};[...list].sort(rankCmp).forEach((e,i)=>m[e.id]=i+1);return m;}
+let sortKey='dataKey',sortDir='asc';        /* aba Eventos */
+let pSortKey='prazoKey',pSortDir='asc';     /* aba Premiações */
+function makeSortFn(key,dir){
+  const sv=e=>{
+    if(key==='pos')return dateDist(e);
+    if(key==='custo')return custoReal(e);
+    if(key==='ingresso')return +e.ingresso||0;
+    if(key==='geo')return geoRank(e.geo);
+    if(key==='prazoKey')return e.prazoKey||'9999-12-31';/* sem prazo vai para o fim */
+    if(key==='dataKey')return e.dataKey||'9999-12-31';/* sem data vai para o fim */
+    return (e[key]||'').toString().toLowerCase();
+  };
+  return (a,b)=>{const x=sv(a),y=sv(b);let d=0;
+    if(x<y)d=-1;else if(x>y)d=1;
+    if(d===0)return rankCmp(a,b);/* desempate sempre pela proximidade de data */
+    return dir==='desc'?-d:d;};
+}
+function defaultDir(k){return (k==='pos'||k==='custo'||k==='ingresso')?'desc':'asc';}
+function wireRows(sel){
+  document.querySelectorAll(sel).forEach(tr=>{
+    let t=null;
+    tr.onclick=()=>{if(t)return;t=setTimeout(()=>{t=null;openDetail(tr.dataset.id);},230);};
+    tr.ondblclick=()=>{if(t){clearTimeout(t);t=null;}openModal(tr.dataset.id);};
+  });
+}
+function renderEventos(){
+  const q=($('search').value||'').toLowerCase(),fs=$('fSetor').value,fst=$('fStatus').value,fe=$('fEscopo').value;
+  const base=eventosList();
+  const rk=rankMapOf(base);
+  let list=base.filter(e=>
+    (!q||(e.nome||'').toLowerCase().includes(q)||(e.organizador||'').toLowerCase().includes(q))&&
+    (!fs||e.setor===fs)&&(!fst||e.status===fst)&&(!fe||e.escopo===fe));
+  list.sort(makeSortFn(sortKey,sortDir));
+  $('evEmpty').style.display=list.length?'none':'block';
+  $('evBody').innerHTML=list.map(e=>{
+    return `<tr data-id="${e.id}">
+      <td><span class="pos">${rk[e.id]}º</span></td>
+      <td><b>${esc(e.nome)}</b><div class="geo">${esc(e.organizador||'')}</div></td>
+      <td><span class="badge">${esc(e.setor||'—')}</span></td>
+      <td><span class="geo">${esc(locLabel(e))}${tagsHtml(e)}</span></td>
+      <td class="geo">${esc(evPrazoDisplay(e))}</td>
+      <td class="geo">${esc(evDateDisplay(e))}</td>
+      <td>${precoHtml(e)}</td>
+      <td><b>${money(custoReal(e))}</b><div class="geo">${e.pessoas||1}p</div></td>
+      <td><span class="badge" style="border-color:${statusColor(e.status)};color:${statusColor(e.status)}">${e.status}</span></td>
+    </tr>`}).join('');
+  wireRows('#evBody tr');
+}
+function renderPremiacoes(){
+  const q=($('pmSearch').value||'').toLowerCase(),fst=$('pmStatus').value,fe=$('pmEscopo').value;
+  const base=premiosList();
+  const rk=rankMapOf(base);
+  let list=base.filter(e=>
+    (!q||(e.nome||'').toLowerCase().includes(q)||(e.organizador||'').toLowerCase().includes(q))&&
+    (!fst||e.status===fst)&&(!fe||e.escopo===fe));
+  list.sort(makeSortFn(pSortKey,pSortDir));
+  $('pmEmpty').style.display=list.length?'none':'block';
+  $('pmBody').innerHTML=list.map(e=>{
+    return `<tr data-id="${e.id}">
+      <td><span class="pos">${rk[e.id]}º</span></td>
+      <td><b>${esc(e.nome)}</b><div class="geo">${esc(e.organizador||'')}</div></td>
+      <td><span class="geo">${esc(locLabel(e))}${tagsHtml(e)}</span></td>
+      <td class="geo">${esc(evPrazoDisplay(e))}</td>
+      <td>${precoHtml(e)}</td>
+      <td><span class="badge" style="border-color:${statusColor(e.status)};color:${statusColor(e.status)}">${e.status}</span></td>
+    </tr>`}).join('');
+  wireRows('#pmBody tr');
+}
+function renderTables(){renderEventos();renderPremiacoes();}
+
+/* ---------- calendário ---------- */
+const _now=new Date();
+let calY=_now.getFullYear()<2026?2026:_now.getFullYear(), calM=_now.getFullYear()<2026?6:_now.getMonth();
+let showConf=true, showAval=true, showEvt=true, showPrem=true;
+function isConf(s){return s==='Inscrito'||s==='Aprovado';}
+function renderCalendario(){
+  $('calMonth').value=calM;$('calYear').value=calY;
+  $('calDow').innerHTML=DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  const first=new Date(calY,calM,1).getDay(), days=new Date(calY,calM+1,0).getDate();
+  const todayKey=`${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
+  let cells='';
+  for(let i=0;i<first;i++)cells+='<div class="cal-cell blank"></div>';
+  for(let d=1;d<=days;d++){
+    const key=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    /* eventos plotam pela data do evento; premiações pela data-limite de inscrição (prazo) */
+    const evs=S.events.filter(e=>(isPremio(e)?e.prazoKey:e.dataKey)===key && e.status!=='Descartado' && ((isConf(e.status)&&showConf)||(e.status==='A avaliar'&&showAval)) && ((isPremio(e)&&showPrem)||(!isPremio(e)&&showEvt)));
+    const chips=evs.map(e=>{const pz=isPremio(e);return `<div class="cal-ev ${isConf(e.status)?'conf':'aval'}${pz?' prazo':''}" data-id="${e.id}" title="${esc(e.nome)} · ${pz?'prazo de inscrição · ':''}${esc(e.status)}">${pz?'Prazo · ':''}${esc(e.nome)}</div>`;}).join('');
+    cells+=`<div class="cal-cell${key===todayKey?' today':''}"><span class="cal-dn">${d}</span>${chips}</div>`;
+  }
+  $('calGrid').innerHTML=cells;
+  $('calGrid').querySelectorAll('.cal-ev').forEach(c=>c.onclick=()=>openDetail(c.dataset.id));
+}
+function fillCalSelects(){
+  $('calMonth').innerHTML=MESES.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+  $('calYear').innerHTML=[2025,2026,2027].map(y=>`<option value="${y}">${y}</option>`).join('');
+}
+$('calMonth').onchange=function(){calM=+this.value;renderCalendario();};
+$('calYear').onchange=function(){calY=+this.value;renderCalendario();};
+$('calPrev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCalendario();};
+$('calNext').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalendario();};
+$('calToday').onclick=()=>{calY=_now.getFullYear();calM=_now.getMonth();renderCalendario();};
+$('tConf').onclick=function(){showConf=!showConf;this.classList.toggle('on',showConf);renderCalendario();};
+$('tAval').onclick=function(){showAval=!showAval;this.classList.toggle('on',showAval);renderCalendario();};
+$('tEvt').onclick=function(){showEvt=!showEvt;this.classList.toggle('on',showEvt);renderCalendario();};
+$('tPrem').onclick=function(){showPrem=!showPrem;this.classList.toggle('on',showPrem);renderCalendario();};
+
+/* ---------- selects/filtros ---------- */
+function fillSelects(){
+  $('fSetor').innerHTML='<option value="">Todos os setores</option>'+SETORES.filter(s=>s!=='Outro').map(s=>`<option>${s}</option>`).join('');
+  $('fStatus').innerHTML='<option value="">Todos os status</option>'+STATUS.map(s=>`<option>${s}</option>`).join('');
+  $('pmStatus').innerHTML='<option value="">Todos os status</option>'+STATUS.map(s=>`<option>${s}</option>`).join('');
+  $('budgetInput').value=S.budget??'';
+  fillCalSelects();
+}
+$('budgetInput').onchange=function(){S.budget=this.value===''?null:+this.value;save();renderPainel();};
+['search','fSetor','fStatus','fEscopo'].forEach(id=>$(id).oninput=renderEventos);
+function syncSortUI(){const sk=$('sortKey');if(sk)sk.value=sortKey;const sd=$('sortDir');if(sd)sd.value=sortDir;}
+function applySort(k,dir){sortKey=k;sortDir=dir;syncSortUI();renderEventos();}
+$('sortKey').onchange=function(){applySort(this.value,$('sortDir').value);};
+$('sortDir').onchange=function(){applySort($('sortKey').value,this.value);};
+$('clearF').onclick=()=>{['search','fSetor','fStatus','fEscopo'].forEach(id=>$(id).value='');applySort('dataKey','asc');};
+document.querySelectorAll('#evTable th[data-s]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.s;if(sortKey===k){sortDir=sortDir==='desc'?'asc':'desc';}else{sortDir=defaultDir(k);}sortKey=k;syncSortUI();renderEventos();
+});
+syncSortUI();
+
+/* filtros/ordenação da aba Premiações */
+['pmSearch','pmStatus','pmEscopo'].forEach(id=>$(id).oninput=renderPremiacoes);
+function syncPmSortUI(){const sk=$('pmSortKey');if(sk)sk.value=pSortKey;const sd=$('pmSortDir');if(sd)sd.value=pSortDir;}
+function applyPmSort(k,dir){pSortKey=k;pSortDir=dir;syncPmSortUI();renderPremiacoes();}
+$('pmSortKey').onchange=function(){applyPmSort(this.value,$('pmSortDir').value);};
+$('pmSortDir').onchange=function(){applyPmSort($('pmSortKey').value,this.value);};
+$('pmClearF').onclick=()=>{['pmSearch','pmStatus','pmEscopo'].forEach(id=>$(id).value='');applyPmSort('prazoKey','asc');};
+document.querySelectorAll('#pmTable th[data-s]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.s;if(pSortKey===k){pSortDir=pSortDir==='desc'?'asc':'desc';}else{pSortDir=defaultDir(k);}pSortKey=k;syncPmSortUI();renderPremiacoes();
+});
+syncPmSortUI();
+$('addPrem').onclick=()=>openModal(null,{setor:'Prêmios & Concursos',tipo:'Prêmio/Concurso',geo:'brasil',escopo:'Nacional',modalidade:'Online'});
+
+/* ---------- janela de detalhes (1 clique) ---------- */
+function openDetail(id){
+  const e=S.events.find(x=>x.id===id);if(!e)return;
+  const fmt=(e.formatos||[]).join(', ')||'—';
+  const moms=(e.momentos||[]).join(' · ')||'—';
+  $('modal').innerHTML=`
+    <div class="dhead">
+      <div><h2>${esc(e.nome)}</h2><div class="geo" style="margin-top:4px">${esc(e.organizador||'')}</div></div>
+    </div>
+    <div class="chips" style="margin:10px 0 2px">
+      <span class="badge">${esc(e.setor||'—')}</span>
+      <span class="badge">${esc(e.tipo||'—')}</span>
+      <span class="badge">${esc(locLabel(e))}${tagsHtml(e)}</span>
+    </div>
+    <p class="ddesc">${esc(e.descricao||e.obs||'(sem descrição — dê duplo clique para editar e adicionar)')}</p>
+    <div class="dgrid">
+      <div class="dkv"><span class="k">Prazo inscrição</span><span class="v">${esc(evPrazoDisplay(e))}</span></div>
+      <div class="dkv"><span class="k">Data do evento</span><span class="v">${esc(evDateDisplay(e))}</span></div>
+      <div class="dkv"><span class="k">Local · modalidade</span><span class="v">${esc(locLabel(e))} · ${esc(e.modalidade||'—')}</span></div>
+      <div class="dkv"><span class="k">Ingresso / pessoa</span><span class="v">${precoHtml(e)}</span></div>
+      <div class="dkv"><span class="k">Custo real (${e.pessoas||1}p)</span><span class="v">${money(custoReal(e))}</span></div>
+      <div class="dkv"><span class="k">Conteúdo planejado</span><span class="v">${esc(fmt)}</span></div>
+      <div class="dkv"><span class="k">Fases</span><span class="v">${esc(moms)}</span></div>
+      ${e.link?`<div class="dkv"><span class="k">Link</span><span class="v"><a href="${esc(e.link)}" target="_blank" rel="noopener">abrir site ↗</a></span></div>`:''}
+    </div>
+    ${(e.obs&&e.descricao)?`<div class="note"><b>Observação:</b> ${esc(e.obs)}</div>`:''}
+    <div class="seg" style="margin-top:18px">Status</div>
+    <select id="d_status" style="max-width:260px">${STATUS.map(o=>`<option${e.status===o?' selected':''}>${o}</option>`).join('')}</select>
+    <div class="modal-foot">
+      <button class="btn left" id="d_edit">${ICON.pencil} Editar detalhes</button>
+      <button class="btn pri" id="d_close">Fechar</button>
+    </div>`;
+  $('modalBg').classList.add('open');
+  $('d_status').onchange=function(){e.status=this.value;save();renderPainel();renderTables();renderCalendario();toast('Status atualizado');};
+  $('d_edit').onclick=()=>openModal(id);
+  $('d_close').onclick=closeModal;
+}
+
+/* ---------- modal de edição ---------- */
+function selWithOutro(id,list,val){
+  const has=list.includes(val);const sel=has?val:'Outro';
+  return `<select id="${id}">${list.map(o=>`<option${sel===o?' selected':''}>${o}</option>`).join('')}</select>
+    <input id="${id}_o" placeholder="qual?" value="${has?'':esc(val||'')}" style="margin-top:7px;display:${sel==='Outro'?'block':'none'}">`;
+}
+function openModal(id,preset){
+  const e=id?S.events.find(x=>x.id===id):null;
+  const d=e||Object.assign({id:'',nome:'',organizador:'',fonte:'',link:'',data:'',dataKey:'',dataFimKey:'',prazo:'',prazoKey:'',geo:'sp',cidade:'',escopo:'Nacional',modalidade:'Presencial',setor:'Mobiliário & Design',tipo:'Feira',ingresso:'',moeda:'BRL',gratuito:false,pessoas:1,desloc:S.est.sp.d,hosp:S.est.sp.h,status:'A avaliar',descricao:'',obs:'',formatos:[],momentos:[],conteudoDesc:''},preset||{});
+  if(!e){const g=S.est[d.geo]||S.est.sp;d.desloc=g.d;d.hosp=g.h;}
+  $('modal').classList.add('wide');
+  $('modal').innerHTML=`
+    <div class="mhead"><h2>${e?'Editar evento':'Novo evento'}</h2></div>
+    <div class="mgrid">
+      <div class="mcol">
+        <div class="seg">Identificação</div>
+        <div class="field"><label>Nome do evento</label><input id="f_nome" value="${esc(d.nome)}" placeholder="Ex.: RD Summit 2026"></div>
+        <div class="row"><div class="field"><label>Organizador</label><input id="f_org" value="${esc(d.organizador)}"></div>
+          <div class="field"><label>Link oficial</label><input id="f_link" value="${esc(d.link)}"></div></div>
+        <div class="row"><div class="field"><label>Fonte (onde achou)</label><input id="f_fonte" value="${esc(d.fonte)}"></div>
+          <div class="field"><label>Cidade / país</label><input id="f_cidade" value="${esc(d.cidade||'')}" placeholder="deixe vazio p/ SP ou Brasília"></div></div>
+        <div class="field grow"><label>Descrição</label><textarea id="f_desc" placeholder="O que é o evento e por que importa para a Paraéllo">${esc(d.descricao||'')}</textarea></div>
+      </div>
+      <div class="mcol">
+        <div class="seg">Logística & categoria</div>
+        <div class="field"><label>Prazo de inscrição</label><div class="datefield"><input id="f_prazokey" type="date" value="${esc(d.prazoKey||'')}" placeholder="dd/mm/aaaa"></div></div>
+        <div class="row">
+          <div class="field"><label>Data do evento · início</label><div class="datefield"><input id="f_datakey" type="date" value="${esc(d.dataKey)}" placeholder="dd/mm/aaaa"></div></div>
+          <div class="field"><label>Data do evento · fim (opcional)</label><div class="datefield"><input id="f_datafim" type="date" value="${esc(d.dataFimKey||'')}" placeholder="dd/mm/aaaa"></div></div>
+        </div>
+        <div class="field"><label>Modalidade (pode marcar as duas)</label><div class="chips" id="f_mod"><span class="chip${isPresencial(d)?' on':''}" data-mod="Presencial">Presencial</span><span class="chip${isOnline(d)?' on':''}" data-mod="Online">Online</span></div></div>
+        <div class="row">
+          <div class="field"><label>Escopo</label><select id="f_escopo">${['Nacional','Internacional'].map(o=>`<option${d.escopo===o?' selected':''}>${o}</option>`).join('')}</select></div>
+          <div class="field"><label>Setor</label>${selWithOutro('f_setor',SETORES,d.setor)}</div>
+        </div>
+        <div class="field"><label>Tipo</label>${selWithOutro('f_tipo',TIPOS,d.tipo)}</div>
+      </div>
+    </div>
+
+    <div class="mgrid">
+      <div class="mcol">
+        <div class="seg">Custo real <span style="float:right;font-family:var(--sans);text-transform:none;letter-spacing:0;color:var(--text);font-weight:700" id="f_custo">—</span></div>
+        <div class="row">
+          <div class="field"><label>Ingresso/pessoa</label><div class="moneyfield"><select id="f_moeda"><option value="BRL"${(d.moeda||'BRL')==='BRL'?' selected':''}>R$</option><option value="EUR"${d.moeda==='EUR'?' selected':''}>€</option><option value="USD"${d.moeda==='USD'?' selected':''}>US$</option></select><input id="f_ing" type="number" min="0" value="${d.ingresso}"${d.gratuito?' disabled':''}></div>
+            <label class="checkline"><input type="checkbox" id="f_gratis"${d.gratuito?' checked':''}> Gratuito confirmado</label></div>
+          <div class="field"><label>Pessoas do time</label><input id="f_pes" type="number" min="1" value="${d.pessoas||1}"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Deslocamento/pessoa (R$)</label><input id="f_des" type="number" min="0" value="${d.desloc}"></div>
+          <div class="field"><label>Hospedagem/pessoa (R$)</label><input id="f_hos" type="number" min="0" value="${d.hosp}"></div>
+        </div>
+      </div>
+      <div class="mcol">
+        <div class="seg">Decisão</div>
+        <div class="field"><label>Status</label><select id="f_status">${STATUS.map(o=>`<option${d.status===o?' selected':''}>${o}</option>`).join('')}</select></div>
+        <div class="field"><label>Observação (extra, opcional)</label><input id="f_obs" value="${esc(d.obs)}"></div>
+      </div>
+    </div>
+
+    <div class="mgrid">
+      <div class="mcol" style="grid-column:1/-1">
+        <div class="seg">Plano de conteúdo</div>
+        <div class="row">
+          <div class="field"><label>Formatos a produzir</label><div class="chips" id="f_formatos">${FORMATOS.map(f=>`<span class="chip${(d.formatos||[]).includes(f)?' on':''}" data-fmt="${f}">${f}</span>`).join('')}</div></div>
+          <div class="field"><label>Fases de produção (pode marcar mais de uma)</label><div class="chips" id="f_momentos">${MOMENTOS.map(m=>`<span class="chip${(Array.isArray(d.momentos)?d.momentos:(d.momento?[d.momento]:[])).includes(m)?' on':''}" data-mom="${m}">${m}</span>`).join('')}</div></div>
+        </div>
+        <div class="field"><label>O que pretendemos produzir</label><input id="f_cdesc" value="${esc(d.conteudoDesc)}"></div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      ${e?'<button class="btn sm danger left" id="f_del">Excluir</button>':''}
+      <button class="btn" id="f_cancel">Cancelar</button>
+      <button class="btn pri" id="f_save">${e?'Salvar':'Adicionar'}</button>
+    </div>`;
+  $('modalBg').classList.add('open');
+
+  // "Outro" revela campo de texto
+  ['f_setor','f_tipo'].forEach(base=>{$(base).onchange=function(){$(base+'_o').style.display=this.value==='Outro'?'block':'none';};});
+
+  const recalc=()=>{
+    const tmp={ingresso:+$('f_ing').value,moeda:$('f_moeda').value,pessoas:+$('f_pes').value,desloc:+$('f_des').value,hosp:+$('f_hos').value};
+    $('f_custo').textContent=money(custoReal(tmp));
+  };
+  const derivedGeo=()=>$('f_escopo').value==='Internacional'?'intl':($('f_cidade').value.trim()?'brasil':'sp');
+  $('f_escopo').onchange=function(){const g=S.est[derivedGeo()];$('f_des').value=g.d;$('f_hos').value=g.h;recalc();};
+  ['f_ing','f_pes','f_des','f_hos'].forEach(id=>$(id).oninput=recalc);
+  $('f_moeda').onchange=recalc;
+  $('f_gratis').onchange=function(){$('f_ing').disabled=this.checked;if(this.checked)$('f_ing').value=0;recalc();};
+  $('f_mod').querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>ch.classList.toggle('on'));
+  $('f_formatos').querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>ch.classList.toggle('on'));
+  $('f_momentos').querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>ch.classList.toggle('on'));
+  recalc();
+
+  $('f_cancel').onclick=closeModal;
+  if(e)$('f_del').onclick=()=>{if(confirm('Excluir este evento?')){S.events=S.events.filter(x=>x.id!==e.id);save();closeModal();renderAll();toast('Evento excluído');}};
+  $('f_save').onclick=()=>{
+    const outroVal=base=>{const s=$(base).value;return s==='Outro'?($(base+'_o').value.trim()||'Outro'):s;};
+    const dataKey=$('f_datakey').value,dataFimKey=$('f_datafim').value,prazoKey=$('f_prazokey').value;
+    const obj={
+      id:e?e.id:uid(),nome:$('f_nome').value.trim(),organizador:$('f_org').value.trim(),link:$('f_link').value.trim(),fonte:$('f_fonte').value.trim(),
+      data:fmtDataRange(dataKey,dataFimKey),dataKey,dataFimKey,prazo:fmtPrazoTxt(prazoKey),prazoKey,modalidade:(()=>{const m=[...$('f_mod').querySelectorAll('.chip.on')].map(c=>c.dataset.mod);return (m.includes('Presencial')&&m.includes('Online'))?'Híbrido':(m[0]||'Presencial');})(),geo:derivedGeo(),cidade:$('f_cidade').value.trim(),escopo:$('f_escopo').value,
+      setor:outroVal('f_setor'),tipo:outroVal('f_tipo'),ingresso:+$('f_ing').value||0,moeda:$('f_moeda').value,gratuito:$('f_gratis').checked,pessoas:+$('f_pes').value||1,desloc:+$('f_des').value||0,hosp:+$('f_hos').value||0,
+      formatos:[...$('f_formatos').querySelectorAll('.chip.on')].map(c=>c.dataset.fmt),momentos:[...$('f_momentos').querySelectorAll('.chip.on')].map(c=>c.dataset.mom),conteudoDesc:$('f_cdesc').value.trim(),
+      status:$('f_status').value,descricao:$('f_desc').value.trim(),obs:$('f_obs').value.trim()
+    };
+    if(!obj.nome){toast('Dê um nome ao evento');return;}
+    if(e){Object.assign(S.events.find(x=>x.id===e.id),obj);}else{S.events.push(obj);}
+    save();closeModal();renderAll();toast(e?'Evento salvo':'Evento adicionado');
+  };
+}
+function closeModal(){$('modalBg').classList.remove('open');$('modal').classList.remove('wide');$('modal').innerHTML='';}
+$('modalBg').onclick=ev=>{if(ev.target===$('modalBg')){const saveBtn=$('f_save');if(saveBtn)saveBtn.click();else closeModal();}};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const saveBtn=$('f_save');if(saveBtn)saveBtn.click();else closeModal();}});
+$('addBtn').onclick=()=>openModal();$('addBtn2').onclick=()=>openModal();
+
+/* ---------- dados ---------- */
+function download(name,text,type){const b=new Blob([text],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+async function buildRadarHtml(){
+  let html;
+  try{ html=await (await fetch(location.href,{cache:'no-store'})).text(); if(!/RADAR_EMBED_START/.test(html)) throw 0; }
+  catch(e){ html='<!DOCTYPE html>\n'+document.documentElement.outerHTML; }
+  const A='/*'+'RADAR_EMBED_START'+'*/', B='/*'+'RADAR_EMBED_END'+'*/';
+  const esc=s=>s.replace(/[*/]/g,'\\$&');
+  const re=new RegExp(esc(A)+'[\\s\\S]*?'+esc(B));
+  const inject=A+'const EMBEDDED_STATE='+JSON.stringify(S).replace(/</g,'\\u003c')+';'+B;
+  return html.replace(re,()=>inject);
+}
+async function saveRadarHtml(){
+  let html;
+  try{ html=await buildRadarHtml(); }catch(e){ toast('Falha ao gerar o arquivo'); return; }
+  const fname='Radar de Eventos Paraéllo - Sem Notas.html';
+  if(window.showSaveFilePicker){
+    try{
+      const h=await window.showSaveFilePicker({suggestedName:fname,types:[{description:'Página HTML',accept:{'text/html':['.html']}}]});
+      const w=await h.createWritable(); await w.write(html); await w.close();
+      toast('Arquivo salvo');
+    }catch(e){ if(e&&e.name==='AbortError')return; download(fname,html,'text/html'); toast('Salvo nos downloads'); }
+  } else { download(fname,html,'text/html'); toast('Baixado — escolha a pasta no navegador'); }
+}
+$('saveHtmlBtn').onclick=saveRadarHtml;
+$('expJson').onclick=()=>download('radar-eventos.json',JSON.stringify(S,null,2),'application/json');
+$('expCsv').onclick=()=>{
+  const cols=['posicao','nome','organizador','setor','tipo','escopo','local','prazo_inscricao','data_evento','status','ingresso','pessoas','custo_real','link'];
+  const rk=rankMap();
+  const rows=[...S.events].sort(rankCmp).map(e=>[rk[e.id],e.nome,e.organizador,e.setor,e.tipo,e.escopo,locLabel(e),evPrazoDisplay(e),evDateDisplay(e),e.status,precoText(e),e.pessoas,custoReal(e),e.link]);
+  const csv=[cols.join(';'),...rows.map(r=>r.map(c=>`"${(c==null?'':''+c).replace(/"/g,'""')}"`).join(';'))].join('\n');
+  download('radar-eventos.csv','﻿'+csv,'text/csv');
+};
+$('impFile').onchange=function(){const f=this.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{
+    const data=JSON.parse(r.result);const incoming=Array.isArray(data)?data:(data.events||[]);
+    const keyOf=e=>((e.nome||'')+'|'+(e.dataKey||e.data||'')).toLowerCase().trim();
+    const seen=new Set(S.events.map(keyOf));let added=0,skip=0;
+    incoming.forEach(e=>{const k=keyOf(e);if(seen.has(k)){skip++;return;}seen.add(k);
+      e.id=uid();S.events.push(e);added++;});
+    save();renderAll();$('impInfo').innerHTML=`<b>${added}</b> novos importados · <b>${skip}</b> duplicados ignorados.`;toast(added+' eventos importados');
+  }catch(err){$('impInfo').textContent='Arquivo inválido: '+err.message;}};
+  r.readAsText(f);this.value='';
+};
+$('wipeBtn').onclick=()=>{if(confirm('Apagar TODOS os dados desta ferramenta?')){S=defState();save();window.__cloudHydrate(function(){fillSelects();renderAll();});toast('Tudo apagado');}};
+$('seedBtn').onclick=()=>{
+  const ex=[
+    {nome:'CASACOR São Paulo 2026',organizador:'CASACOR',setor:'Decoração & Casa',tipo:'Mostra',geo:'sp',escopo:'Nacional',data:'2 jun–9 ago',dataKey:'2026-06-02',ingresso:141,pessoas:2,status:'A avaliar',descricao:'Maior mostra de arquitetura, decoração e paisagismo das Américas (Parque da Água Branca, SP). Vitrine de tendências e ponto de encontro com arquitetos e designers de interiores.',formatos:['Foto / branding','Reels / vídeo'],momentos:['Antes','Durante','Depois'],conteudoDesc:'Cobertura de ambientes e tendências'},
+    {nome:'ABIMAD 2026',organizador:'ABIMAD',setor:'Mobiliário & Design',tipo:'Feira',geo:'sp',escopo:'Nacional',data:'3–6 ago',dataKey:'2026-08-03',ingresso:0,pessoas:2,status:'A avaliar',descricao:'Feira de móveis e decoração de alto padrão (São Paulo Expo), reunindo fabricantes, lojistas multimarca e compradores. Canal direto de negócios B2B.',formatos:['Case / depoimento'],momentos:['Durante','Depois'],conteudoDesc:'Lançamentos e contatos comerciais'},
+    {nome:'Prêmio Salão Design 2026',organizador:'Movergs / Salão Design',setor:'Prêmios & Concursos',tipo:'Prêmio/Concurso',geo:'brasil',cidade:'Bento Gonçalves (RS)',escopo:'Nacional',data:'a confirmar',dataKey:'',ingresso:0,pessoas:1,status:'A avaliar',descricao:'Um dos principais prêmios de design de mobiliário da América Latina. Reconhecimento e prestígio para a marca e seus designers.',formatos:['Post LinkedIn'],momentos:['Depois'],conteudoDesc:'Branding e prestígio de design'}
+  ];
+  ex.forEach(e=>{e.id=uid();e.desloc=S.est[e.geo].d;e.hosp=S.est[e.geo].h;S.events.push(e);});
+  save();renderAll();toast('3 exemplos carregados');
+};
+
+/* ---------- prompt de pesquisa (aba Dados) ---------- */
+const RESEARCH_PROMPT=`Você é um pesquisador sênior de eventos para a PARAÉLLO — marca brasileira de mobiliário e design de alto padrão (curadoria de designers italianos, fabricação no Brasil), com estética tropical, vibrante e de alma brasileira. Posicionamento: custo-benefício com exclusividade, para um público A/B exigente. Canal-chave: arquitetos, designers de interiores e lojistas multimarca (especificadores que decidem a venda de móvel de design), além de incorporadoras, hotelaria e imprensa de casa & design. O objetivo é decidir a quais eventos a Paraéllo deve ir (especificação/networking, prospecção comercial, tendências de design e geração de conteúdo).
+
+>>> ATIVE A PESQUISA PROFUNDA NA WEB. Se a sua interface tiver modo "Research"/Deep Research ou busca na web, LIGUE antes de responder. Não responda de memória.
+
+MÉTODO DE PESQUISA (obrigatório):
+- PRIMEIRO, identifique a DATA DE HOJE (a data real em que você está respondendo). Use-a como referência — não assuma um mês/ano fixo.
+- JANELA DE BUSCA: por padrão, mapeie eventos dos PRÓXIMOS 6 MESES a partir de hoje (a menos que o usuário defina outro período abaixo). Inclua apenas eventos cuja data de início caia nessa janela e ainda esteja no futuro.
+- CONFIRME a EDIÇÃO correta que ocorre dentro dessa janela (o ano certo); nunca reaproveite datas/preços de edições passadas.
+- Consulte MÚLTIPLAS fontes por evento; priorize o SITE OFICIAL. Cruze a data e o preço em pelo menos 2 fontes quando possível.
+- Verifique se o evento NÃO foi cancelado, adiado ou mudou de cidade/local. Se houver dúvida sobre a realização, registre em "obs".
+- Seja ABRANGENTE: cubra todos os temas-alvo abaixo e os recortes geográficos pedidos; não pare em 3–4 eventos óbvios. Busque também eventos regionais e internacionais relevantes.
+- NÃO duplique eventos. NÃO inclua eventos fora do período pedido. Se o usuário listar eventos já mapeados ou a excluir, respeite.
+
+TEMAS-ALVO DA PARAÉLLO (busque eventos relacionados a):
+- Mobiliário & design de produto: feiras de móveis e design (ex.: Formóbile, ABIMAD, ABUP, Movelsul/Bento Gonçalves; internacionais como Salone del Mobile/Milão, Maison&Objet/Paris, ICFF/Nova York).
+- Decoração, casa & interiores: mostras e feiras de decoração (ex.: CASACOR, ABCasa Fair, mostras regionais).
+- Arquitetura & design de interiores: eventos e congressos de arquitetos e designers, e eventos de especificação (o canal que decide a venda).
+- Arte & cultura: feiras e bienais de arte e design, museus (ex.: SP-Arte, ArtRio, DW! Semana de Design), com afinidade ao modernismo e à estética brasileira.
+- Varejo & consumo de alto valor (A/B): eventos de varejo premium, casa & construção, lifestyle e e-commerce de design.
+- Prêmios & concursos de design: editais e premiações de design/mobiliário (ex.: iF Design, Red Dot, Prêmio Salão Design, Prêmio Design Museu da Casa Brasileira, Prêmio Objeto Brasileiro).
+
+AO AVALIAR CADA EVENTO, dê peso à presença de: arquitetos e designers de interiores, especificadores/projetistas, lojistas multimarca e buyers, incorporadoras e hotelaria, imprensa de casa & design, e público A/B.
+
+TAREFA: pesquise eventos relevantes para o período [OPCIONAL — deixe em branco para usar o padrão de próximos 6 meses; ou informe outro, ex.: "agosto a dezembro deste ano"] e nas regiões [ex.: "Brasil (foco SP) + principais internacionais de design e mobiliário"]. [OPCIONAL: liste aqui eventos que já tenho ou temas prioritários desta leva.] Para cada evento, retorne os campos abaixo. NÃO invente preços: se confirmar que é gratuito, use ingresso:0 e gratuito:true; se não conseguir confirmar o preço, use ingresso:0 e gratuito:false (a ferramenta mostra "Verificar" nesse caso) e explique em "obs" (com a fonte quando houver).
+
+SAÍDA: responda APENAS com um ARRAY JSON válido (começando em [ e terminando em ]). Sem texto antes ou depois, sem comentários, sem cercas de markdown (sem \`\`\`). Aspas duplas em todas as chaves e strings.
+
+ESQUEMA DE CADA EVENTO (todos os campos obrigatórios, exceto onde indicado opcional):
+{
+  "nome": "string — nome oficial + (edição/ano) se houver",
+  "organizador": "string",
+  "link": "string — URL oficial; '' se não houver",
+  "fonte": "string — domínio(s) onde os dados foram confirmados",
+  "dataKey": "string — data de INÍCIO do evento no formato AAAA-MM-DD; '' se o dia exato ainda não foi divulgado (a ferramenta exibe a data já formatada como dd/mm/aaaa — não escreva texto livre)",
+  "dataFimKey": "OPCIONAL — string AAAA-MM-DD com a data de FIM, só quando o evento durar mais de um dia; deixe '' para eventos de um único dia (a ferramenta então mostra 'De dd/mm até dd/mm/aaaa')",
+  "prazoKey": "string — prazo FINAL de inscrição em AAAA-MM-DD (exibido como dd/mm/aaaa); '' se não houver/aplicável (use sobretudo em prêmios/concursos e lotes com data-limite)",
+  "geo": "um de: sp | brasil | intl  (brasil = outras cidades BR fora de SP)",
+  "cidade": "string — cidade (UF) ou (País); deixe '' quando geo for sp",
+  "escopo": "um de: Nacional | Internacional",
+  "modalidade": "um de: Presencial | Híbrido | Online — use Híbrido quando o evento for presencial E online ao mesmo tempo (transmissão/edição online simultânea)",
+  "setor": "um de: Mobiliário & Design | Decoração & Casa | Arquitetura & Interiores | Arte & Cultura | Varejo & Consumo | Prêmios & Concursos | Transversal | Outro",
+  "tipo": "um de: Feira | Mostra | Bienal | Prêmio/Concurso | Congresso | Summit | Workshop | Outro  (PRÊMIOS E CONCURSOS: use setor 'Prêmios & Concursos' E tipo 'Prêmio/Concurso' — assim o item vai para a aba PREMIAÇÕES; qualquer outra combinação vai para a aba EVENTOS)",
+  "ingresso": número — preço do ingresso/inscrição por pessoa, no valor e na moeda ORIGINAIS da fonte (sem símbolo, só o número; não converta para R$); 0 se o evento for gratuito OU se o preço ainda não foi confirmado — nesses dois casos use também o campo 'gratuito' abaixo para diferenciar,
+  "moeda": "um de: BRL | EUR | USD — moeda em que o valor de 'ingresso' foi informado pela fonte",
+  "gratuito": booleano — true SOMENTE quando a gratuidade for confirmada pela fonte (ex.: 'entrada gratuita mediante credenciamento'); false quando ingresso:0 for apenas por falta de confirmação do preço (nesse caso a ferramenta mostra 'Verificar', não 'Grátis') — nunca marque true por padrão ou por suposição,
+  "pessoas": número — quantas pessoas pretende-se enviar (use 1 por padrão),
+  "status": "A avaliar"  (sempre este valor para eventos novos),
+  "descricao": "string — 1 a 3 frases: o que é, onde, por que importa para a Paraéllo",
+  "obs": "string — preço/lote, pendências, fonte do valor, alertas (ex.: 'preço não confirmado')"
+}
+
+REGRAS: dataKey, dataFimKey e prazoKey sempre em AAAA-MM-DD (mês e dia com 2 dígitos) — nunca em texto livre, a ferramenta formata a exibição sozinha. Não duplique eventos. Não inclua eventos fora do período pedido. Se um dado for incerto, registre em "obs" em vez de inventar. NUNCA marque "gratuito":true sem confirmação explícita da fonte — na dúvida, use false (a ferramenta mostra "Verificar"). ABA DESTINO: prêmios/concursos (setor "Prêmios & Concursos" + tipo "Prêmio/Concurso") aparecem na aba PREMIAÇÕES; todo o resto, na aba EVENTOS — mantenha esses dois campos coerentes. Retorne só o JSON.`;
+{const pb=$('promptBox');if(pb)pb.value=RESEARCH_PROMPT;}
+{const cb=$('copyPromptBtn');if(cb)cb.onclick=async()=>{
+  const txt=$('promptBox').value;
+  try{await navigator.clipboard.writeText(txt);}
+  catch(_){const t=$('promptBox');t.focus();t.select();try{document.execCommand('copy');}catch(__){}t.setSelectionRange(0,0);t.blur();}
+  toast('Prompt copiado');
+};}
+
+/* ---------- boot ---------- */
+function renderAll(){renderPainel();renderTables();renderCalendario();}
+window.__cloudHydrate(function(){fillSelects();renderAll();});
+</script>
+
+
+<grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration><script src="/sync.js"></script>
+</body></html>

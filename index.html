@@ -632,6 +632,7 @@ tbody tr:last-child td{border-bottom:none}
     </div></div></div>
 <div class="toast" id="toast">Evento salvo</div>
 
+<script src="/sync.js"></script>
 <script>
 "use strict";
 /* ---------- ícones ---------- */
@@ -1100,7 +1101,7 @@ $('impFile').onchange=function(){const f=this.files[0];if(!f)return;const r=new 
   }catch(err){$('impInfo').textContent='Arquivo inválido: '+err.message;}};
   r.readAsText(f);this.value='';
 };
-$('wipeBtn').onclick=()=>{if(confirm('Apagar TODOS os dados desta ferramenta?')){S=defState();save();window.__cloudHydrate(function(){fillSelects();renderAll();});toast('Tudo apagado');}};
+$('wipeBtn').onclick=()=>{if(confirm('Apagar TODOS os dados desta ferramenta?')){S=defState();save();fillSelects();renderAll();toast('Tudo apagado');}};
 $('seedBtn').onclick=()=>{
   const ex=[
     {nome:'CASACOR São Paulo 2026',organizador:'CASACOR',setor:'Decoração & Casa',tipo:'Mostra',geo:'sp',escopo:'Nacional',data:'2 jun–9 ago',dataKey:'2026-06-02',ingresso:141,pessoas:2,status:'A avaliar',descricao:'Maior mostra de arquitetura, decoração e paisagismo das Américas (Parque da Água Branca, SP). Vitrine de tendências e ponto de encontro com arquitetos e designers de interiores.',formatos:['Foto / branding','Reels / vídeo'],momentos:['Antes','Durante','Depois'],conteudoDesc:'Cobertura de ambientes e tendências'},
@@ -1178,5 +1179,4 @@ window.__cloudHydrate(function(){fillSelects();renderAll();});
 </script>
 
 
-<grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration><script src="/sync.js"></script>
-</body></html>
+<grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration></body></html>
